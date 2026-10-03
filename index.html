@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="NEON ESCAPE — a fast-paced arcade survival game where every second counts. Dodge hazards, chain combos, complete daily missions, and conquer global leaderboards.">
+  <meta name="keywords" content="neon escape, arcade survival, browser game, html5 game, indie game, space game, leaderboards">
+  <meta name="theme-color" content="#2563EB">
+  <title>NEON ESCAPE &mdash; Survive. Evolve. Dominate.</title>
+
+  <!-- Favicon & PWA App Icons -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
+
+  <!-- Open Graph / Facebook / Discord -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="NEON ESCAPE &mdash; Survive. Evolve. Dominate.">
+  <meta property="og:description" content="NEON ESCAPE — a fast-paced arcade survival game where every second counts. Dodge hazards, chain combos, complete daily missions, and conquer global leaderboards.">
+  <meta property="og:image" content="assets/icons/icon-512.svg">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NEON ESCAPE &mdash; Survive. Evolve. Dominate.">
+  <meta name="twitter:description" content="NEON ESCAPE — a fast-paced arcade survival game where every second counts.">
+  <meta name="twitter:image" content="assets/icons/icon-512.svg">
+
+  <!-- Clean, Human Typography: Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="platform-body">
+
+  <!-- PLATFORM MASTER LAYOUT WRAPPER -->
+  <div class="platform-app-layout" id="platformApp">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="platform-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">NEON ESCAPE</span>
+          <span class="brand-tag">INDIE ARCADE</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <button class="nav-tab-btn active" data-tab="play" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="rankings" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="6"></circle>
+            <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"></path>
+          </svg>
+          <span>Rankings</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="profile" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="missions" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+          <span>Missions</span>
+          <span class="nav-pill-badge" id="sidebarMissionPill">5</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="achievements" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Achievements</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="garage" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span>Garage</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="friends" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Friends</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="challenges" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Challenges</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <button class="nav-tab-btn" data-tab="settings" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Settings</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="howtoplay" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>How to Play</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar User Footer -->
+      <div class="sidebar-user-footer" id="headerUserCard" role="button" tabindex="0">
+        <div class="footer-avatar" id="headerAvatarBox">🚀</div>
+        <div class="footer-user-meta">
+          <div class="footer-user-name" id="headerUsername">Pilot</div>
+          <div class="footer-user-sub" id="headerPlayerId">NE-XXXXXX</div>
+        </div>
+        <button class="icon-action-btn" id="authBtn" title="Account / Sign In" aria-label="Account">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN PLATFORM CONTENT WRAPPER -->
+    <div class="platform-main-container">
+
+      <!-- TOP HEADER (Clean Utility Bar) -->
+      <header class="platform-top-bar">
+        <div class="top-bar-left">
+          <!-- Mobile Brand Logo -->
+          <div class="mobile-brand">
+            <div class="mobile-brand-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+              </svg>
+            </div>
+            <span class="mobile-brand-title">NEON ESCAPE</span>
+          </div>
+
+          <!-- Season Tag -->
+          <div class="season-indicator" id="headerSeasonBadge">
+            <span class="season-dot"></span>
+            <span class="season-text">Season 01 &bull; Cosmic Rush</span>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <!-- Coins Counter -->
+          <div class="coins-badge" id="headerCoinsPill" title="Neon Coins">
+            <span class="coin-glyph">🪙</span>
+            <span class="coin-val" id="headerCoins">150</span>
+          </div>
+
+          <!-- Sound Toggle Button -->
+          <button id="soundToggleBtn" class="icon-action-btn" aria-label="Toggle Sound" title="Sound (M)">
+            <svg class="icon icon-sound-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg class="icon icon-sound-off hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </button>
+
+          <!-- Mobile Profile Trigger -->
+          <button class="mobile-profile-btn" onclick="window.platform.switchTab('profile')" aria-label="Profile">
+            <span id="mobileAvatarIcon">🚀</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Gentle Guest Notice Banner -->
+      <div id="guestBannerNotice" class="guest-notice-bar">
+        <div class="guest-notice-content">
+          <span class="badge-guest">GUEST</span>
+          <span>You are playing as a guest. Create an account to permanently sync leaderboard scores across devices.</span>
+        </div>
+        <button class="btn btn-sm btn-primary" id="guestCreateAccountBtn">Create Account</button>
+      </div>
+
+      <!-- MAIN SCROLLABLE VIEW CONTENT -->
+      <main class="platform-content-area" id="platformContentArea">
+
+        <!-- ================= VIEW: DASHBOARD / PLAY ================= -->
+        <section id="tab-play" class="platform-view-tab active">
+          
+          <!-- Returning Player Summary Card (Item 35) -->
+          <div class="surface-card returning-player-card" id="returningPlayerCard">
+            <div class="return-greeting-row">
+              <div>
+                <span class="card-eyebrow">CAREER SNAPSHOT</span>
+                <h2 class="return-name" id="returnPlayerGreeting">WELCOME BACK, PILOT</h2>
+              </div>
+              <div class="return-avatar-circle" id="returnPlayerAvatar">🚀</div>
+            </div>
+            <div class="return-metrics-grid">
+              <div class="return-metric-item">
+                <span class="return-metric-label">Last Run</span>
+                <span class="return-metric-val" id="returnLastRunScore">--</span>
+              </div>
+              <div class="return-metric-item">
+                <span class="return-metric-label">Personal Best</span>
+                <span class="return-metric-val highlight-score" id="returnBestScore">0</span>
+              </div>
+              <div class="return-metric-item">
+                <span class="return-metric-label">Current Rank</span>
+                <span class="return-metric-val" id="returnCurrentRank">#--</span>
+              </div>
+              <div class="return-metric-item">
+                <span class="return-metric-label">Daily Missions</span>
+                <span class="return-metric-val text-primary" id="returnDailyMissionsCount">5 Available</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome Hero Card -->
+          <div class="dashboard-hero-card">
+            <div class="hero-text-col">
+              <div class="hero-greeting-tag" id="heroGreetingTag">Welcome back, Pilot</div>
+              <h1 class="hero-heading">Ready for another run?</h1>
+              <p class="hero-subtext">Maneuver your ship, dodge incoming hazards, build combo chains, and climb the leaderboard.</p>
+              
+              <div class="hero-actions-row">
+                <button id="mainPlayBtn" class="btn btn-lg btn-primary" type="button" onclick="window.platform.launchGame()">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Play Now</span>
+                </button>
+                <button class="btn btn-lg btn-secondary" type="button" onclick="window.platform.switchTab('rankings')">
+                  View Rankings
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Telemetry Stats Bar -->
+            <div class="hero-metrics-col">
+              <div class="metric-card">
+                <span class="metric-label">Best Score</span>
+                <span class="metric-value highlight-score" id="playBestScoreVal">0</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Level</span>
+                <div class="metric-level-row">
+                  <span class="metric-value" id="headerLevel">LVL 1</span>
+                  <div class="metric-xp-bar">
+                    <div class="xp-fill" id="headerXpBar"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Daily Missions</span>
+                <span class="metric-value" id="playMissionsCount">5 Available</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Runs Played</span>
+                <span class="metric-value" id="playGamesVal">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Competition: Friends Duel Snapshot (Item 36, 37) -->
+          <div class="surface-card friends-duel-card" id="friendsDuelCard">
+            <div class="card-header-row">
+              <div>
+                <span class="card-eyebrow">FRIENDLY RIVALRY</span>
+                <h3 class="card-title">Your Friends Are Playing</h3>
+              </div>
+              <button class="btn-link" onclick="window.platform.switchTab('friends')">All Friends &rarr;</button>
+            </div>
+            <div class="duel-comparison-row" id="friendsDuelContent">
+              <!-- Dynamically populated in platform.js -->
+            </div>
+          </div>
+
+          <!-- Section: Daily Missions Strip -->
+          <div class="dashboard-section-header">
+            <div>
+              <h2 class="section-title">Daily Missions</h2>
+              <p class="section-desc">Reset every 24 hours. Complete directives to earn XP &amp; coins.</p>
+            </div>
+            <button class="btn-link" onclick="window.platform.switchTab('missions')">View All &rarr;</button>
+          </div>
+
+          <div class="daily-missions-dashboard-row" id="dashboardMissionsPreview">
+            <!-- Dynamically cloned or shown -->
+          </div>
+
+          <!-- Grid: Competitive Season + Top Leaderboard Preview -->
+          <div class="dashboard-grid-two-col">
+            
+            <!-- Season Card -->
+            <div class="surface-card">
+              <div class="card-header-row">
+                <div>
+                  <span class="card-eyebrow">COMPETITIVE LADDER</span>
+                  <h3 class="card-title">Season 01: Cosmic Rush</h3>
+                </div>
+                <span class="timer-pill" id="seasonCountdownTimer">CALCULATING...</span>
+              </div>
+              <p class="card-text">Climb the competitive brackets before the season resets to earn exclusive cosmetics and titles.</p>
+              
+              <div class="season-rewards-list">
+                <div class="reward-chip">
+                  <span class="chip-icon">🛸</span>
+                  <span>Spectre Ship (Lvl 10)</span>
+                </div>
+                <div class="reward-chip">
+                  <span class="chip-icon">✨</span>
+                  <span>Cosmic Trail (Lvl 15)</span>
+                </div>
+                <div class="reward-chip">
+                  <span class="chip-icon">🪙</span>
+                  <span>+2,500 Season Coins</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Leaderboard Snapshot -->
+            <div class="surface-card">
+              <div class="card-header-row">
+                <div>
+                  <span class="card-eyebrow">GLOBAL PODIUM</span>
+                  <h3 class="card-title">Top Players</h3>
+                </div>
+                <button class="btn-link" onclick="window.platform.switchTab('rankings')">Full Board &rarr;</button>
+              </div>
+              
+              <div class="top-players-mini-list" id="dashboardTopPlayersMini">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ================= VIEW: RANKINGS / LEADERBOARDS ================= -->
+        <section id="tab-rankings" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Leaderboards</h1>
+              <p class="page-desc">Real-time competitive rankings across all sectors.</p>
+            </div>
+            
+            <!-- Category Tabs -->
+            <div class="filter-segmented-control">
+              <button class="segment-btn active" onclick="window.platform.setRankingFilter('global')">Global</button>
+              <button class="segment-btn" onclick="window.platform.setRankingFilter('country')">Country</button>
+              <button class="segment-btn" onclick="window.platform.setRankingFilter('friends')">Friends</button>
+              <button class="segment-btn" onclick="window.platform.setRankingFilter('season')">Season 01</button>
+            </div>
+          </div>
+
+          <!-- Search Player Input -->
+          <div class="table-search-bar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              id="playerSearchInput" 
+              class="form-input search-input" 
+              placeholder="Search by username, player ID (NE-XXXXXX), or country..." 
+              oninput="window.platform.searchQuery = this.value; window.platform.renderRankingsTab();"
+            />
+          </div>
+
+          <!-- Top 3 Podium Cards -->
+          <div class="podium-grid" id="rankingsPodium">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Leaderboard Table -->
+          <div class="surface-card table-card">
+            <div class="table-responsive">
+              <table class="platform-table">
+                <thead>
+                  <tr>
+                    <th class="col-rank">Rank</th>
+                    <th class="col-player">Player</th>
+                    <th class="col-country">Country</th>
+                    <th class="col-level">Level</th>
+                    <th class="col-score">High Score</th>
+                  </tr>
+                </thead>
+                <tbody id="rankingsTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Persistent "YOUR RANK" Dock -->
+          <div class="your-rank-dock" id="yourRankDock">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: PROFILE ================= -->
+        <section id="tab-profile" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Player Profile</h1>
+              <p class="page-desc">Your personal career telemetry, milestones, and identity.</p>
+            </div>
+            <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
+          </div>
+
+          <!-- Profile Header Card -->
+          <div class="surface-card profile-hero-card">
+            <div class="profile-avatar-wrap">
+              <div class="profile-avatar-circle" id="profileAvatarBox">🚀</div>
+              <span class="profile-level-badge" id="profileLevelBadge">Level 1</span>
+            </div>
+            <div class="profile-details">
+              <div class="profile-name-row">
+                <h2 class="profile-name" id="profileUsername">Pilot</h2>
+                <span class="profile-country-badge" id="profileCountry">🇺🇸 US</span>
+              </div>
+              <div class="profile-sub-row">
+                <span>Player ID: <strong id="profilePlayerId">NE-XXXXXX</strong></span>
+              </div>
+              <div class="profile-xp-track">
+                <div class="xp-labels-row">
+                  <span>Level Progress</span>
+                  <span id="profileXpText">0 / 350 XP</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="profileXpFill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Badges Strip -->
+          <div class="profile-badges-strip">
+            <span class="badge-tag">Season 01 Cadet</span>
+            <span class="badge-tag">Top 5% Escapist</span>
+            <span class="badge-tag">Evasion Ace</span>
+            <span class="badge-tag">Combo Master</span>
+          </div>
+
+          <!-- Career Statistics 5x2 Grid -->
+          <h2 class="section-title mt-6">Career Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-box-label">Best Score</span>
+              <span class="stat-box-val highlight-score" id="statBestScore">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Games Played</span>
+              <span class="stat-box-val" id="statGamesPlayed">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Total Score</span>
+              <span class="stat-box-val" id="statTotalScore">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Longest Survival</span>
+              <span class="stat-box-val" id="statLongestRun">00:00</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Total Survival Time</span>
+              <span class="stat-box-val" id="statTotalSurvival">00:00</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Crystals Collected</span>
+              <span class="stat-box-val" id="statCrystals">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Near Misses</span>
+              <span class="stat-box-val" id="statNearMisses">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Obstacles Evaded</span>
+              <span class="stat-box-val" id="statDodges">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Power-ups Collected</span>
+              <span class="stat-box-val" id="statPowerups">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-box-label">Highest Combo</span>
+              <span class="stat-box-val" id="statMaxCombo">1x</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: MISSIONS ================= -->
+        <section id="tab-missions" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Missions &amp; Directives</h1>
+              <p class="page-desc">Complete tactical objectives to earn XP, Neon Coins, and build your daily streak.</p>
+            </div>
+            <div class="mission-header-stats">
+              <span class="timer-pill" id="missionsResetCountdown">Reset in 08:42:17</span>
+              <div class="streak-badge" id="missionsStreakCounter">🔥 1 Day Streak</div>
+            </div>
+          </div>
+
+          <!-- Mission Category Tabs (Items 25, 27) -->
+          <div class="filter-segmented-control mb-4">
+            <button class="segment-btn active" id="missionTabDaily" onclick="window.platform.setMissionCategory('daily')">Daily Missions</button>
+            <button class="segment-btn" id="missionTabWeekly" onclick="window.platform.setMissionCategory('weekly')">Weekly Goals</button>
+            <button class="segment-btn" id="missionTabSeasonal" onclick="window.platform.setMissionCategory('seasonal')">Seasonal Directives</button>
+          </div>
+
+          <div class="missions-list" id="missionsListContainer">
+            <!-- Dynamically populated in platform.js -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: ACHIEVEMENTS ================= -->
+        <section id="tab-achievements" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Achievements</h1>
+              <p class="page-desc">Unlock career badges, titles, and coin rewards.</p>
+            </div>
+            <span class="badge-chip" id="achievementsCountBadge">0 / 18 Unlocked</span>
+          </div>
+
+          <div class="achievements-grid" id="achievementsGridContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: GARAGE ================= -->
+        <section id="tab-garage" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Garage</h1>
+              <p class="page-desc">Customize your starfighter chassis and engine exhaust trails.</p>
+            </div>
+          </div>
+
+          <h2 class="section-title mt-4">Ship Chassis</h2>
+          <div class="cosmetics-grid" id="garageShipSelector">
+            <!-- Dynamically populated -->
+          </div>
+
+          <h2 class="section-title mt-6">Engine Trails</h2>
+          <div class="cosmetics-grid" id="garageTrailSelector">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: FRIENDS ================= -->
+        <section id="tab-friends" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Friends</h1>
+              <p class="page-desc">Connect with other players, compare scores, and send duels.</p>
+            </div>
+          </div>
+
+          <!-- Add Friend Input Bar -->
+          <div class="action-search-bar">
+            <input type="text" id="addFriendInput" class="form-input" placeholder="Enter Player ID (NE-XXXXXX) or username...">
+            <button class="btn btn-primary" onclick="window.platform.addFriend(document.getElementById('addFriendInput').value); document.getElementById('addFriendInput').value='';">
+              Add Friend
+            </button>
+          </div>
+
+          <div class="friends-list" id="friendsListContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: CHALLENGES ================= -->
+        <section id="tab-challenges" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Challenges</h1>
+              <p class="page-desc">Beat friend scores to claim coin rewards and bragging rights.</p>
+            </div>
+          </div>
+
+          <div class="challenges-list" id="challengesListContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- ================= VIEW: SETTINGS ================= -->
+        <section id="tab-settings" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">Settings</h1>
+              <p class="page-desc">Audio preferences, accessibility, graphics, and account management.</p>
+            </div>
+          </div>
+
+          <div class="settings-card surface-card">
+            <!-- SOUND & AUDIO -->
+            <h2 class="settings-group-heading">Sound &amp; Audio</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Sound Effects</strong>
+                <p class="text-secondary text-sm">Procedural synthesized sound effects</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="window.game ? window.game.toggleSound() : null" id="settingsSoundToggleBtn">Toggle Audio (M)</button>
+            </div>
+            <div class="settings-item-row">
+              <div>
+                <strong>Background Synth Theme</strong>
+                <p class="text-secondary text-sm">Adaptive synthesized soundtrack during runs</p>
+              </div>
+              <span class="badge-chip">Enabled</span>
+            </div>
+
+            <!-- ACCESSIBILITY & DISPLAY -->
+            <h2 class="settings-group-heading mt-6">Accessibility &amp; Display</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Reduced Motion</strong>
+                <p class="text-secondary text-sm">Minimizes screen shakes, pulse, and rapid particle bursts</p>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="settingReducedMotion" onchange="window.platform.toggleReducedMotion(this.checked)">
+                <span class="slider-round"></span>
+              </label>
+            </div>
+            <div class="settings-item-row">
+              <div>
+                <strong>Haptic Vibration</strong>
+                <p class="text-secondary text-sm">Tactile feedback on near-misses and collisions (mobile)</p>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="settingVibration" onchange="window.platform.toggleVibration(this.checked)" checked>
+                <span class="slider-round"></span>
+              </label>
+            </div>
+            <div class="settings-item-row">
+              <div>
+                <strong>Graphics Quality</strong>
+                <p class="text-secondary text-sm">Adjust particle density and shadow layers</p>
+              </div>
+              <select id="settingQuality" class="form-input form-input-sm" style="width: auto; padding: 4px 10px;" onchange="window.platform.setGraphicsQuality(this.value)">
+                <option value="HIGH">HIGH (Full 60fps FX)</option>
+                <option value="MEDIUM">MEDIUM (Balanced)</option>
+                <option value="LOW">LOW (Battery Saver)</option>
+              </select>
+            </div>
+
+            <!-- APP & PWA -->
+            <h2 class="settings-group-heading mt-6">Application &amp; Installation</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Install App (PWA)</strong>
+                <p class="text-secondary text-sm">Install to desktop or mobile home screen for offline launch</p>
+              </div>
+              <button class="btn btn-sm btn-primary" id="pwaInstallBtn">Install PWA</button>
+            </div>
+
+            <!-- ACCOUNT & SYNC -->
+            <h2 class="settings-group-heading mt-6">Account &amp; Cloud Sync</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Status</strong>
+                <p class="text-secondary text-sm" id="settingsAuthStatus">Guest Mode</p>
+              </div>
+              <span class="badge-chip" id="settingsFirebaseStatus">Hybrid Cloud</span>
+            </div>
+
+            <div id="settingsGuestCard" class="mt-4 p-4 rounded-card bg-neutral">
+              <p class="text-sm">Link an account to keep your leaderboard placement secure across multiple devices.</p>
+              <button class="btn btn-primary mt-3" onclick="document.getElementById('authModal').classList.remove('hidden')">
+                Sign In / Register
+              </button>
+            </div>
+
+            <div class="settings-item-row mt-4">
+              <div>
+                <strong>Account Actions</strong>
+                <p class="text-secondary text-sm">Switch pilot profile or sign out from this device</p>
+              </div>
+              <button class="btn btn-sm btn-tertiary" onclick="window.platform.logout()">Switch / Reset Profile</button>
+            </div>
+
+            <!-- LEGAL & PRIVACY -->
+            <h2 class="settings-group-heading mt-6">Privacy &amp; Terms</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Data &amp; Privacy Policy</strong>
+                <p class="text-secondary text-sm">Review telemetry, storage disclosure, and terms of service</p>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="document.getElementById('privacyTermsModal').classList.remove('hidden')">View Privacy &amp; Terms</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: HOW TO PLAY ================= -->
+        <section id="tab-howtoplay" class="platform-view-tab hidden">
+          <div class="view-header-row">
+            <div>
+              <h1 class="page-title">How to Play</h1>
+              <p class="page-desc">Maneuver your ship, evade hazards, collect crystals, and build combos.</p>
+            </div>
+          </div>
+
+          <div class="manual-columns-grid">
+            <div class="surface-card">
+              <h2 class="card-title mb-4">Hazards to Evade</h2>
+              <div class="manual-list-item">
+                <span class="item-icon-box">☄️</span>
+                <div>
+                  <strong>Meteor</strong>
+                  <p class="text-sm text-secondary">Rotating irregular asteroid. Costs 1 life on hit.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">⚡</span>
+                <div>
+                  <strong>Energy Barrier</strong>
+                  <p class="text-sm text-secondary">Horizontal plasma beam spanning lanes.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">👾</span>
+                <div>
+                  <strong>Hunter Drone</strong>
+                  <p class="text-sm text-secondary">Sinusoidal maneuvering airborne drone.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">🔮</span>
+                <div>
+                  <strong>Plasma Ball</strong>
+                  <p class="text-sm text-secondary">Fast-moving orb in Overdrive and Nightmare phases.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="surface-card">
+              <h2 class="card-title mb-4">Items &amp; Power-ups</h2>
+              <div class="manual-list-item">
+                <span class="item-icon-box">💎</span>
+                <div>
+                  <strong>Energy Crystal (+10 pts)</strong>
+                  <p class="text-sm text-secondary">Collect quickly within 2.8s to chain up to 5X combo.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">✨</span>
+                <div>
+                  <strong>Rare Crystal (+50 pts)</strong>
+                  <p class="text-sm text-secondary">High-yield gold crystal that gives substantial bonus.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">🛡️</span>
+                <div>
+                  <strong>Shield</strong>
+                  <p class="text-sm text-secondary">Absorbs 1 collision safely without losing life.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">⏳</span>
+                <div>
+                  <strong>Slow Motion (5s)</strong>
+                  <p class="text-sm text-secondary">Slows falling obstacles to 40% speed.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">2X</span>
+                <div>
+                  <strong>Double Score (10s)</strong>
+                  <p class="text-sm text-secondary">Doubles all points earned during the window.</p>
+                </div>
+              </div>
+              <div class="manual-list-item">
+                <span class="item-icon-box">🧲</span>
+                <div>
+                  <strong>Magnet (8s)</strong>
+                  <p class="text-sm text-secondary">Attracts nearby crystals automatically.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="surface-card mt-6">
+            <h2 class="card-title mb-2">Controls</h2>
+            <div class="controls-tags-row">
+              <span class="key-tag">Left / Right Arrows</span>
+              <span class="key-tag">A / D</span>
+              <span class="key-tag">Touch Buttons (Mobile)</span>
+              <span class="key-tag">P / ESC (Pause)</span>
+              <span class="key-tag">M (Mute)</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- MOBILE FIXED BOTTOM NAVIGATION BAR -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+      <button class="mobile-nav-btn active" data-tab="play" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Home</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-tab="rankings" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="6"></circle>
+          <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"></path>
+        </svg>
+        <span>Rankings</span>
+      </button>
+
+      <button class="mobile-nav-btn mobile-play-trigger" type="button" onclick="window.platform.launchGame()">
+        <div class="mobile-play-circle">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+        <span>Play</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-tab="missions" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="6"></circle>
+          <circle cx="12" cy="12" r="2"></circle>
+        </svg>
+        <span>Missions</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-tab="profile" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ==========================================================================
+       FULLSCREEN CANVAS GAMEPLAY MODAL (DARK IMMERSIVE ACTIVE RUN)
+       ========================================================================== -->
+  <div id="gameplayModal" class="gameplay-modal-wrapper hidden">
+    <div class="game-wrapper" id="gameWrapper">
+      
+      <!-- Top Gameplay Bar (Minimalist) -->
+      <div class="gameplay-top-bar">
+        <div class="gameplay-player-pill">
+          <span class="gameplay-avatar" id="gameplayAvatar">🚀</span>
+          <span class="gameplay-name" id="gameplayPlayerName">Pilot</span>
+          <span class="gameplay-level" id="gameplayPlayerLevel">LVL 1</span>
+        </div>
+        <div class="gameplay-actions">
+          <button id="inGameSoundToggleBtn" class="gameplay-icon-btn" aria-label="Toggle Sound" title="Sound (M)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+          <button id="pauseToggleBtn" class="gameplay-icon-btn" aria-label="Pause Game" title="Pause Game (ESC / P)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+            </svg>
+          </button>
+          <button class="gameplay-icon-btn" onclick="window.platform.exitGameToPlatform()" title="Exit Game" aria-label="Exit Game">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Play Area -->
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="gameCanvas" width="540" height="960" aria-label="Neon Escape Game Screen"></canvas>
+
+        <!-- In-Game Minimalist HUD -->
+        <div id="playingHud" class="hud-overlay">
+          <div class="hud-top">
+            <!-- Score Display -->
+            <div class="hud-stat-pill">
+              <span class="hud-pill-label">SCORE</span>
+              <span id="currentScoreDisplay" class="hud-pill-val">0</span>
+            </div>
+
+            <!-- Hull / Lives Display -->
+            <div class="hud-lives-pill" aria-label="Player Lives">
+              <div class="hearts-container" id="livesContainer">
+                <span class="heart-icon active" id="heart1">❤️</span>
+                <span class="heart-icon active" id="heart2">❤️</span>
+                <span class="heart-icon active" id="heart3">❤️</span>
+              </div>
+            </div>
+
+            <!-- Best Score -->
+            <div class="hud-stat-pill">
+              <span class="hud-pill-label">RECORD</span>
+              <span id="highScoreHudDisplay" class="hud-pill-val">0</span>
+            </div>
+          </div>
+
+          <!-- Middle Row: Phase Banner & Combo Gauge -->
+          <div class="hud-middle-row">
+            <div id="phaseAnnouncement" class="phase-banner hidden">Phase 1 &bull; Training</div>
+
+            <div id="comboBadge" class="hud-combo-badge hidden">
+              <span class="combo-flame">⚡</span>
+              <span id="comboMultiplierText" class="combo-val">2x</span>
+              <div class="combo-bar-bg">
+                <div id="comboProgressBar" class="combo-bar-fill"></div>
+              </div>
+            </div>
+
+            <!-- Achievement Toast Notification -->
+            <div id="achievementToast" class="achievement-toast hidden" aria-live="polite">
+              <div class="achievement-icon" id="achievementIcon">🏆</div>
+              <div class="achievement-content">
+                <div class="achievement-badge-tag">ACHIEVEMENT UNLOCKED &bull; +50 PTS</div>
+                <div class="achievement-title" id="achievementTitle">Survivor</div>
+                <div class="achievement-desc" id="achievementDesc">Survive 30 seconds</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Power-ups Minimalist Bar -->
+          <div class="hud-powerups-bar" id="powerupsBar">
+            <div id="shieldBadge" class="powerup-badge badge-shield hidden">
+              <span class="badge-icon">🛡️</span>
+              <span class="badge-title">SHIELD</span>
+            </div>
+
+            <div id="slowmoBadge" class="powerup-badge badge-slowmo hidden">
+              <span class="badge-icon">⏳</span>
+              <span class="badge-title">SLOW-MO</span>
+              <span id="slowmoTimeText" class="badge-time">5.0s</span>
+            </div>
+
+            <div id="doubleBadge" class="powerup-badge badge-double hidden">
+              <span class="badge-icon">2X</span>
+              <span class="badge-title">DOUBLE</span>
+              <span id="doubleTimeText" class="badge-time">10.0s</span>
+            </div>
+
+            <div id="magnetBadge" class="powerup-badge badge-magnet hidden">
+              <span class="badge-icon">🧲</span>
+              <span class="badge-title">MAGNET</span>
+              <span id="magnetTimeText" class="badge-time">8.0s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pause Screen Overlay -->
+        <div id="pauseScreen" class="game-overlay hidden">
+          <div class="screen-modal-card">
+            <h2 class="modal-title">Game Paused</h2>
+            <p class="modal-desc">Take a breath. Your flight is paused.</p>
+
+            <div class="modal-actions-col">
+              <button id="resumeBtn" class="btn btn-primary btn-block" type="button">
+                Resume Run
+              </button>
+              <button id="restartFromPauseBtn" class="btn btn-secondary btn-block" type="button">
+                Restart
+              </button>
+              <button id="exitToPlatformBtn" class="btn btn-tertiary btn-block" type="button" onclick="window.platform.exitGameToPlatform()">
+                Exit to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Human Game Over Result Screen (Items 18, 19) -->
+        <div id="gameOverScreen" class="game-overlay hidden">
+          <div class="screen-modal-card game-over-card">
+            <div class="game-over-header">
+              <span class="game-over-label">FINAL SCORE</span>
+              <div class="hero-score-val" id="finalScoreVal">0</div>
+              <div id="newBestBadge" class="record-pill hidden">★ New Personal Best!</div>
+              <div id="newGlobalRankBadge" class="record-pill highlight-gold-pill hidden">🏆 New Global Rank!</div>
+            </div>
+
+            <!-- Global Rank & Personal Best Row -->
+            <div class="game-over-rank-pb-row">
+              <div class="rank-pb-item">
+                <span class="rank-pb-label">GLOBAL RANK</span>
+                <span class="rank-pb-val highlight-gold" id="finalGlobalRankVal">#--</span>
+              </div>
+              <div class="rank-pb-divider"></div>
+              <div class="rank-pb-item">
+                <span class="rank-pb-label">PERSONAL BEST</span>
+                <span class="rank-pb-val highlight-score" id="finalHighScoreVal">0</span>
+              </div>
+            </div>
+
+            <!-- Clean Telemetry Grid -->
+            <div class="game-over-stats-grid">
+              <div class="result-stat-box">
+                <span class="result-stat-label">Survival Time</span>
+                <span class="result-stat-val" id="finalTimeVal">00:00</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">Crystals</span>
+                <span class="result-stat-val" id="finalCrystalsVal">0</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">Near Misses</span>
+                <span class="result-stat-val" id="finalNearMissesVal">0</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">Obstacles Evaded</span>
+                <span class="result-stat-val" id="finalDodgesVal">0</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">Best Combo</span>
+                <span class="result-stat-val text-primary" id="finalBestComboVal">x1</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">XP Earned</span>
+                <span class="result-stat-val text-primary" id="finalXpEarnedVal">+0 XP</span>
+              </div>
+              <div class="result-stat-box">
+                <span class="result-stat-label">Coins Earned</span>
+                <span class="result-stat-val text-warning" id="finalCoinsEarnedVal">+0 🪙</span>
+              </div>
+            </div>
+
+            <!-- Next Level Progress Track (Item 18) -->
+            <div class="game-over-level-box" id="gameOverLevelBox">
+              <div class="go-level-header">
+                <span class="go-level-title" id="goLevelTitle">LEVEL 1</span>
+                <span class="go-level-xp" id="goLevelXp">0 / 350 XP</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="goLevelFill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Offline Notice (Item 43) -->
+            <div id="goOfflineNotice" class="offline-saved-notice hidden">
+              <span>📡 You're offline. Your local run is saved safely and will sync on reconnect.</span>
+            </div>
+
+            <div class="modal-actions-col mt-4">
+              <!-- Quick Rematch Primary Button -->
+              <button id="playAgainBtn" class="btn btn-primary btn-block btn-lg" type="button">
+                PLAY AGAIN
+              </button>
+
+              <!-- Share Run Result -->
+              <button id="shareScoreBtn" class="btn btn-secondary btn-block" type="button" onclick="window.platform.shareRunResult()">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                SHARE SCORE
+              </button>
+              
+              <div class="modal-actions-subrow">
+                <button class="btn btn-secondary" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('rankings');">
+                  Leaderboard
+                </button>
+                <button class="btn btn-secondary" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('profile');">
+                  Profile
+                </button>
+                <button class="btn btn-tertiary" type="button" onclick="window.platform.exitGameToPlatform();">
+                  Home
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile Touch Controls Zone (56-72px Ergonomic Thumb Targets) -->
+      <div class="mobile-controls-bar" id="mobileControlsBar">
+        <button id="mobileLeftBtn" class="touch-control-btn" aria-label="Steer Left" type="button">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+          <span>LEFT</span>
+        </button>
+
+        <button id="mobileRightBtn" class="touch-control-btn" aria-label="Steer Right" type="button">
+          <span>RIGHT</span>
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AUTHENTICATION MODAL
+       ========================================================================== -->
+  <div id="authModal" class="platform-modal game-overlay hidden">
+    <div class="screen-modal-card">
+      <div class="modal-header-row">
+        <h2 class="modal-title">Sign In or Register</h2>
+        <button class="modal-close-btn" aria-label="Close" onclick="document.getElementById('authModal').classList.add('hidden')">&times;</button>
+      </div>
+      <p class="modal-desc">Save your scores on global leaderboards and backup unlocked cosmetics.</p>
+
+      <!-- Google Sign-In Button -->
+      <button class="btn btn-google btn-block" id="googleAuthBtn" type="button" onclick="window.platform.triggerPlatformNotification('Google Sign-In', 'Connected to Google Identity.', '🔐')">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="auth-divider"><span>or with email</span></div>
+
+      <form id="emailAuthForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="authEmailInput" class="form-label">Email address</label>
+          <input type="email" id="authEmailInput" class="form-input" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="authPasswordInput" class="form-label">Password</label>
+          <input type="password" id="authPasswordInput" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button class="btn btn-primary btn-block mt-3" type="submit" onclick="window.platform.triggerPlatformNotification('Welcome Back', 'Logged in successfully.', '🚀'); document.getElementById('authModal').classList.add('hidden');">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       EDIT PROFILE MODAL
+       ========================================================================== -->
+  <div id="editProfileModal" class="platform-modal game-overlay hidden">
+    <div class="screen-modal-card">
+      <div class="modal-header-row">
+        <h2 class="modal-title">Edit Profile</h2>
+        <button class="modal-close-btn" aria-label="Close" onclick="document.getElementById('editProfileModal').classList.add('hidden')">&times;</button>
+      </div>
+
+      <form id="editProfileForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="editUsernameInput" class="form-label">Username (3–16 letters/numbers)</label>
+          <input type="text" id="editUsernameInput" class="form-input" maxlength="16" placeholder="Pilot_Alpha" required>
+        </div>
+        <div class="form-group">
+          <label for="editCountrySelect" class="form-label">Country / Region</label>
+          <select id="editCountrySelect" class="form-input">
+            <option value="🇺🇸 US">🇺🇸 United States</option>
+            <option value="🇮🇳 IN">🇮🇳 India</option>
+            <option value="🇬🇧 GB">🇬🇧 United Kingdom</option>
+            <option value="🇯🇵 JP">🇯🇵 Japan</option>
+            <option value="🇩🇪 DE">🇩🇪 Germany</option>
+            <option value="🇨🇦 CA">🇨🇦 Canada</option>
+            <option value="🇧🇷 BR">🇧🇷 Brazil</option>
+            <option value="🇦🇺 AU">🇦🇺 Australia</option>
+            <option value="🇫🇷 FR">🇫🇷 France</option>
+            <option value="🇰🇷 KR">🇰🇷 South Korea</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Avatar</label>
+          <div class="avatar-select-grid" id="avatarSelectGrid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block mt-4" type="submit" id="saveProfileChangesBtn">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       PRIVACY POLICY & TERMS OF SERVICE MODAL (ITEM 21)
+       ========================================================================== -->
+  <div id="privacyTermsModal" class="platform-modal game-overlay hidden">
+    <div class="screen-modal-card privacy-modal-card">
+      <div class="modal-header-row">
+        <h2 class="modal-title">Privacy Policy &amp; Terms</h2>
+        <button class="modal-close-btn" aria-label="Close" onclick="document.getElementById('privacyTermsModal').classList.add('hidden')">&times;</button>
+      </div>
+
+      <div class="privacy-modal-content">
+        <h3 class="privacy-section-title">1. Information We Store</h3>
+        <p class="privacy-p">
+          <strong>NEON ESCAPE</strong> operates on an honest, player-first privacy standard. We store only game progression metrics: your chosen callsign/username, permanent Player ID (<code class="code-id">NE-XXXXXX</code>), high scores, survival duration, achievements unlocked, coins, XP, and cosmetic preferences.
+        </p>
+
+        <h3 class="privacy-section-title">2. Local Storage &amp; Cookies</h3>
+        <p class="privacy-p">
+          We use browser <code class="code-id">localStorage</code> solely to persist your offline runs, volume preferences, and cosmetic loadouts on this device. We do not use third-party behavioral tracking cookies or sell your personal data.
+        </p>
+
+        <h3 class="privacy-section-title">3. Firebase Cloud &amp; Leaderboards</h3>
+        <p class="privacy-p">
+          When connected to the internet, high scores and country tags are synchronized with Google Firebase Firestore to power the real global leaderboard. Score submissions undergo mathematical anti-cheat verification to ensure fair competition for all pilots.
+        </p>
+
+        <h3 class="privacy-section-title">4. Fair Play &amp; Anti-Cheat</h3>
+        <p class="privacy-p">
+          Scores submitted with anomalous telemetry, impossible survival rates, or manipulated memory values are rejected by sector anti-cheat protocols to protect leaderboard integrity.
+        </p>
+
+        <h3 class="privacy-section-title">5. Monetization Ethics</h3>
+        <p class="privacy-p">
+          NEON ESCAPE does not feature gambling, pay-to-win advantages, or manipulative loot boxes. Optional future rewarded incentives and cosmetics are strictly non-advantageous and respect player autonomy.
+        </p>
+      </div>
+
+      <div class="modal-footer-row mt-4">
+        <button class="btn btn-primary btn-block" type="button" onclick="document.getElementById('privacyTermsModal').classList.add('hidden')">
+          I Understand &amp; Agree
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cookie / Local Storage Consent Banner -->
+  <div id="consentNoticeBanner" class="consent-banner hidden" role="region" aria-label="Storage Consent Notice">
+    <div class="consent-content">
+      <span class="consent-icon">🍪</span>
+      <p class="consent-text">
+        <strong>Privacy Notice:</strong> NEON ESCAPE uses local device storage to preserve your high scores, mission progression, and audio preferences. No third-party tracking cookies are used.
+      </p>
+    </div>
+    <button class="btn btn-sm btn-primary" id="consentAcceptBtn">Accept &amp; Continue</button>
+  </div>
+
+  <!-- Platform Toast Notification -->
+  <div id="platformToast" class="platform-toast hidden" aria-live="polite">
+    <div class="toast-icon">⚡</div>
+    <div class="toast-body">
+      <div class="toast-title">Notification</div>
+      <div class="toast-desc">Message content</div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="firebase/firebase-config.js"></script>
+  <script src="monetization.js"></script>
+  <script src="platform.js"></script>
+  <script src="script.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+          .catch(err => console.log('[PWA] Service Worker failed:', err));
+      });
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      if (btn) btn.style.display = 'inline-flex';
+    });
+
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('[PWA] Choice:', outcome);
+          deferredPrompt = null;
+        } else {
+          window.platform.triggerPlatformNotification('PWA Ready', 'Use browser menu to "Add to Home screen" or "Install App".', '📱');
+        }
+      });
+    }
+
+    // Modal Triggers
+    const editBtn = document.getElementById('editProfileBtn');
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        const u = window.platform.currentUser;
+        document.getElementById('editUsernameInput').value = u.username;
+        document.getElementById('editCountrySelect').value = u.country;
+        
+        const grid = document.getElementById('avatarSelectGrid');
+        if (grid) {
+          grid.innerHTML = '';
+          window.platform.avatarsCatalog.forEach(a => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `avatar-opt-btn ${u.avatar === a.id ? 'active' : ''}`;
+            btn.innerHTML = `<span class="opt-icon">${a.icon}</span><span class="opt-label">${a.name}</span>`;
+            btn.onclick = () => {
+              grid.querySelectorAll('.avatar-opt-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              btn.dataset.selected = a.id;
+            };
+            if (u.avatar === a.id) btn.dataset.selected = a.id;
+            grid.appendChild(btn);
+          });
+        }
+
+        document.getElementById('editProfileModal').classList.remove('hidden');
+      });
+    }
+
+    const saveProfileBtn = document.getElementById('saveProfileChangesBtn');
+    if (saveProfileBtn) {
+      saveProfileBtn.addEventListener('click', () => {
+        const newName = document.getElementById('editUsernameInput').value.trim();
+        const newCountry = document.getElementById('editCountrySelect').value;
+        const selectedBtn = document.querySelector('.avatar-opt-btn.active');
+        const newAvatar = selectedBtn ? selectedBtn.dataset.selected : 'apex';
+
+        if (newName.length < 3 || newName.length > 16 || !/^[A-Za-z0-9_]+$/.test(newName)) {
+          window.platform.triggerPlatformNotification('Invalid Username', 'Username must be 3–16 letters, numbers, or underscore.', '⚠️');
+          return;
+        }
+
+        const u = window.platform.currentUser;
+        u.username = newName;
+        u.displayName = newName;
+        u.country = newCountry;
+        u.flag = newCountry.split(' ')[0];
+        u.avatar = newAvatar;
+
+        window.platform.saveUserSession();
+        window.platform.renderHeaderUserBar();
+        window.platform.renderProfileTab();
+        document.getElementById('editProfileModal').classList.add('hidden');
+        window.platform.triggerPlatformNotification('Profile Updated', 'Callsign and region saved successfully.', '✅');
+      });
+    }
+
+    const authBtn = document.getElementById('authBtn');
+    if (authBtn) {
+      authBtn.addEventListener('click', () => {
+        document.getElementById('authModal').classList.remove('hidden');
+      });
+    }
+
+    const guestCreateBtn = document.getElementById('guestCreateAccountBtn');
+    if (guestCreateBtn) {
+      guestCreateBtn.addEventListener('click', () => {
+        document.getElementById('authModal').classList.remove('hidden');
+      });
+    }
+
+    // Consent Banner Handling
+    const consentBanner = document.getElementById('consentNoticeBanner');
+    const consentBtn = document.getElementById('consentAcceptBtn');
+    if (consentBanner && !localStorage.getItem('neon_consent_accepted')) {
+      consentBanner.classList.remove('hidden');
+    }
+    if (consentBtn && consentBanner) {
+      consentBtn.addEventListener('click', () => {
+        localStorage.setItem('neon_consent_accepted', 'true');
+        consentBanner.classList.add('hidden');
+      });
+    }
+
+    // Apply stored startup preferences
+    try {
+      const s = JSON.parse(localStorage.getItem('neon_escape_settings') || '{}');
+      if (s.reducedMotion) document.documentElement.classList.add('reduced-motion');
+    } catch (e) {}
+  </script>
+</body>
+</html>

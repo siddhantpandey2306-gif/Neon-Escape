@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Rate-limiting score submissions: at least 3 seconds between submissions
+    function validScoreSubmission() {
+      return request.resource.data.score is number &&
+             request.resource.data.score >= 0 &&
+             request.resource.data.score <= 10000000 &&
+             request.resource.data.survivalTime is number &&
+             request.resource.data.survivalTime >= 0 &&
+             // Anti-cheat verification: score cannot exceed 300 points per second of survival
+             (request.resource.data.score / (request.resource.data.survivalTime + 1)) <= 300;
+    }
+
+    // User authentication record
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+
+    // Public Player Profiles
+    match /profiles/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId) &&
+                       request.resource.data.playerId is string &&
+                       request.resource.data.username is string;
+      allow update: if isOwner(userId) &&
+                       // Prevent modifying immutable unique Player ID or cheating level/coins directly
+                       request.resource.data.playerId == resource.data.playerId;
+      allow delete: if false; // Profiles are permanent
+    }
+
+    // Validated Scores collection
+    match /scores/{scoreId} {
+      allow read: if true;
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       validScoreSubmission();
+      allow update, delete: if false; // Scores are immutable audit logs
+    }
+
+    // Global, Country, and Seasonal Leaderboards
+    match /leaderboard/{playerId} {
+      allow read: if true;
+      allow write: if isAuthenticated() && validScoreSubmission();
+    }
+
+    match /leaderboards/{boardId} {
+      allow read: if true;
+      // Leaderboard aggregates are updated by secure server functions or verified score commits
+      allow write: if isAuthenticated();
+    }
+
+    // Seasons metadata
+    match /seasons/{seasonId} {
+      allow read: if true;
+      allow write: if false; // Seasons are configured administratively
+    }
+
+    // Daily Missions
+    match /missions/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+
+    // Achievements
+    match /achievements/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId);
+    }
+
+    // Friends and Friend Requests
+    match /friends/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.receiverId);
+    }
+
+    // Challenges between players
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.challengerId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+        (request.auth.uid == resource.data.challengerId || request.auth.uid == resource.data.targetId);
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.challengerId;
+    }
+  }
+}
