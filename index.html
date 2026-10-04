@@ -169,7 +169,7 @@
       <header class="platform-top-bar">
         <div class="top-bar-left">
           <!-- Mobile Brand Logo -->
-          <div class="mobile-brand">
+          <div class="mobile-brand" id="mobileBrandBtn" onclick="window.platform.switchTab('play')" role="button" tabindex="0" title="Return to Dashboard">
             <div class="mobile-brand-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
@@ -380,9 +380,18 @@
         <!-- ================= VIEW: RANKINGS / LEADERBOARDS ================= -->
         <section id="tab-rankings" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Leaderboards</h1>
-              <p class="page-desc">Real-time competitive rankings across all sectors.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Leaderboards</h1>
+                <p class="page-desc">Real-time competitive rankings across all sectors.</p>
+              </div>
             </div>
             
             <!-- Category Tabs -->
@@ -443,9 +452,18 @@
         <!-- ================= VIEW: PROFILE ================= -->
         <section id="tab-profile" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Player Profile</h1>
-              <p class="page-desc">Your personal career telemetry, milestones, and identity.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Player Profile</h1>
+                <p class="page-desc">Your personal career telemetry, milestones, and identity.</p>
+              </div>
             </div>
             <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
           </div>
@@ -533,9 +551,18 @@
         <!-- ================= VIEW: MISSIONS ================= -->
         <section id="tab-missions" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Missions &amp; Directives</h1>
-              <p class="page-desc">Complete tactical objectives to earn XP, Neon Coins, and build your daily streak.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Missions &amp; Directives</h1>
+                <p class="page-desc">Complete tactical objectives to earn XP, Neon Coins, and build your daily streak.</p>
+              </div>
             </div>
             <div class="mission-header-stats">
               <span class="timer-pill" id="missionsResetCountdown">Reset in 08:42:17</span>
@@ -558,9 +585,18 @@
         <!-- ================= VIEW: ACHIEVEMENTS ================= -->
         <section id="tab-achievements" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Achievements</h1>
-              <p class="page-desc">Unlock career badges, titles, and coin rewards.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Achievements</h1>
+                <p class="page-desc">Unlock career badges, titles, and coin rewards.</p>
+              </div>
             </div>
             <span class="badge-chip" id="achievementsCountBadge">0 / 18 Unlocked</span>
           </div>
@@ -573,9 +609,18 @@
         <!-- ================= VIEW: GARAGE ================= -->
         <section id="tab-garage" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Garage</h1>
-              <p class="page-desc">Customize your starfighter chassis and engine exhaust trails.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Garage</h1>
+                <p class="page-desc">Customize your starfighter chassis and engine exhaust trails.</p>
+              </div>
             </div>
           </div>
 
@@ -593,9 +638,18 @@
         <!-- ================= VIEW: FRIENDS ================= -->
         <section id="tab-friends" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Friends</h1>
-              <p class="page-desc">Connect with other players, compare scores, and send duels.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Friends</h1>
+                <p class="page-desc">Connect with other players, compare scores, and send duels.</p>
+              </div>
             </div>
           </div>
 
@@ -615,9 +669,18 @@
         <!-- ================= VIEW: CHALLENGES ================= -->
         <section id="tab-challenges" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Challenges</h1>
-              <p class="page-desc">Beat friend scores to claim coin rewards and bragging rights.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Challenges</h1>
+                <p class="page-desc">Beat friend scores to claim coin rewards and bragging rights.</p>
+              </div>
             </div>
           </div>
 
@@ -629,9 +692,18 @@
         <!-- ================= VIEW: SETTINGS ================= -->
         <section id="tab-settings" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">Settings</h1>
-              <p class="page-desc">Audio preferences, accessibility, graphics, and account management.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">Settings</h1>
+                <p class="page-desc">Audio preferences, accessibility, graphics, and account management.</p>
+              </div>
             </div>
           </div>
 
@@ -651,6 +723,16 @@
                 <p class="text-secondary text-sm">Adaptive synthesized soundtrack during runs</p>
               </div>
               <span class="badge-chip">Enabled</span>
+            </div>
+
+            <!-- CONTROLS & TUTORIAL -->
+            <h2 class="settings-group-heading mt-6">Controls &amp; Tutorial</h2>
+            <div class="settings-item-row">
+              <div>
+                <strong>Mobile Swipe Tutorial</strong>
+                <p class="text-secondary text-sm">Review animated finger swipe gestures and flight controls</p>
+              </div>
+              <button class="btn btn-sm btn-primary" onclick="window.platform.replayTutorial()" id="replayTutorialSettingsBtn">Replay Tutorial</button>
             </div>
 
             <!-- ACCESSIBILITY & DISPLAY -->
@@ -737,10 +819,20 @@
         <!-- ================= VIEW: HOW TO PLAY ================= -->
         <section id="tab-howtoplay" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div>
-              <h1 class="page-title">How to Play</h1>
-              <p class="page-desc">Maneuver your ship, evade hazards, collect crystals, and build combos.</p>
+            <div class="view-header-title-wrap">
+              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <div>
+                <h1 class="page-title">How to Play</h1>
+                <p class="page-desc">Maneuver your ship, evade hazards, collect crystals, and build combos.</p>
+              </div>
             </div>
+            <button class="btn btn-primary btn-sm" onclick="window.platform.replayTutorial()">Interactive Tutorial</button>
           </div>
 
           <div class="manual-columns-grid">
@@ -892,11 +984,20 @@
     <div class="game-wrapper" id="gameWrapper">
       
       <!-- Top Gameplay Bar (Minimalist) -->
-      <div class="gameplay-top-bar">
-        <div class="gameplay-player-pill">
-          <span class="gameplay-avatar" id="gameplayAvatar">🚀</span>
-          <span class="gameplay-name" id="gameplayPlayerName">Pilot</span>
-          <span class="gameplay-level" id="gameplayPlayerLevel">LVL 1</span>
+      <div class="gameplay-top-bar" id="gameplayTopBar">
+        <div class="gameplay-top-left">
+          <button id="inGameHomeBtn" class="gameplay-icon-btn gameplay-home-btn" onclick="window.platform.exitGameToPlatform()" title="Exit to Home" aria-label="Exit to Home">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="gameplay-home-text">Home</span>
+          </button>
+          <div class="gameplay-player-pill">
+            <span class="gameplay-avatar" id="gameplayAvatar">🚀</span>
+            <span class="gameplay-name" id="gameplayPlayerName">Pilot</span>
+            <span class="gameplay-level" id="gameplayPlayerLevel">LVL 1</span>
+          </div>
         </div>
         <div class="gameplay-actions">
           <button id="inGameSoundToggleBtn" class="gameplay-icon-btn" aria-label="Toggle Sound" title="Sound (M)">
@@ -906,15 +1007,9 @@
             </svg>
           </button>
           <button id="pauseToggleBtn" class="gameplay-icon-btn" aria-label="Pause Game" title="Pause Game (ESC / P)">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <svg class="icon-pause-glyph" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
               <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
               <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
-            </svg>
-          </button>
-          <button class="gameplay-icon-btn" onclick="window.platform.exitGameToPlatform()" title="Exit Game" aria-label="Exit Game">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
@@ -933,18 +1028,19 @@
               <span id="currentScoreDisplay" class="hud-pill-val">0</span>
             </div>
 
-            <!-- Hull / Lives Display -->
-            <div class="hud-lives-pill" aria-label="Player Lives">
+            <!-- Hull / Lives Display (One-Life System) -->
+            <div class="hud-lives-pill" id="hudLivesPill" aria-label="Player Hull">
               <div class="hearts-container" id="livesContainer">
                 <span class="heart-icon active" id="heart1">❤️</span>
-                <span class="heart-icon active" id="heart2">❤️</span>
-                <span class="heart-icon active" id="heart3">❤️</span>
+                <span class="heart-icon hidden" id="heart2" style="display:none;"></span>
+                <span class="heart-icon hidden" id="heart3" style="display:none;"></span>
               </div>
+              <span class="hud-hull-label">1 LIFE</span>
             </div>
 
-            <!-- Best Score -->
+            <!-- Best Score / Personal Best Chaser -->
             <div class="hud-stat-pill">
-              <span class="hud-pill-label">RECORD</span>
+              <span class="hud-pill-label">BEST</span>
               <span id="highScoreHudDisplay" class="hud-pill-val">0</span>
             </div>
           </div>
@@ -977,6 +1073,7 @@
             <div id="shieldBadge" class="powerup-badge badge-shield hidden">
               <span class="badge-icon">🛡️</span>
               <span class="badge-title">SHIELD</span>
+              <span id="shieldTimeText" class="badge-time">9.0s</span>
             </div>
 
             <div id="slowmoBadge" class="powerup-badge badge-slowmo hidden">
@@ -1013,41 +1110,44 @@
                 Restart
               </button>
               <button id="exitToPlatformBtn" class="btn btn-tertiary btn-block" type="button" onclick="window.platform.exitGameToPlatform()">
-                Exit to Dashboard
+                Exit to Dashboard (Home)
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Human Game Over Result Screen (Items 18, 19) -->
+        <!-- Human Game Over Result Screen (Items 1, 15) -->
         <div id="gameOverScreen" class="game-overlay hidden">
           <div class="screen-modal-card game-over-card">
             <div class="game-over-header">
-              <span class="game-over-label">FINAL SCORE</span>
-              <div class="hero-score-val" id="finalScoreVal">0</div>
-              <div id="newBestBadge" class="record-pill hidden">★ New Personal Best!</div>
-              <div id="newGlobalRankBadge" class="record-pill highlight-gold-pill hidden">🏆 New Global Rank!</div>
+              <h2 class="game-over-title">GAME OVER</h2>
+              
+              <!-- Primary Score & Personal Best Row -->
+              <div class="game-over-primary-stats">
+                <div class="go-score-box">
+                  <span class="go-stat-label">SCORE</span>
+                  <div class="hero-score-val" id="finalScoreVal">0</div>
+                </div>
+                <div class="go-score-divider"></div>
+                <div class="go-score-box">
+                  <span class="go-stat-label">PERSONAL BEST</span>
+                  <div class="hero-score-val highlight-score" id="finalHighScoreVal">0</div>
+                </div>
+              </div>
+
+              <!-- New Personal Best Celebration Pill (shown ONLY when beaten) -->
+              <div id="newBestBadge" class="record-pill pb-celebration hidden">🏆 NEW PERSONAL BEST</div>
+              <div id="newGlobalRankBadge" class="record-pill highlight-gold-pill hidden">🌟 New Global Rank!</div>
             </div>
 
-            <!-- Global Rank & Personal Best Row -->
-            <div class="game-over-rank-pb-row">
-              <div class="rank-pb-item">
-                <span class="rank-pb-label">GLOBAL RANK</span>
-                <span class="rank-pb-val highlight-gold" id="finalGlobalRankVal">#--</span>
-              </div>
-              <div class="rank-pb-divider"></div>
-              <div class="rank-pb-item">
-                <span class="rank-pb-label">PERSONAL BEST</span>
-                <span class="rank-pb-val highlight-score" id="finalHighScoreVal">0</span>
-              </div>
+            <!-- Survival Time Highlight -->
+            <div class="game-over-time-strip">
+              <span class="time-strip-label">SURVIVAL TIME</span>
+              <span class="time-strip-val" id="finalTimeVal">00:00</span>
             </div>
 
             <!-- Clean Telemetry Grid -->
             <div class="game-over-stats-grid">
-              <div class="result-stat-box">
-                <span class="result-stat-label">Survival Time</span>
-                <span class="result-stat-val" id="finalTimeVal">00:00</span>
-              </div>
               <div class="result-stat-box">
                 <span class="result-stat-label">Crystals</span>
                 <span class="result-stat-val" id="finalCrystalsVal">0</span>
@@ -1074,7 +1174,7 @@
               </div>
             </div>
 
-            <!-- Next Level Progress Track (Item 18) -->
+            <!-- Next Level Progress Track -->
             <div class="game-over-level-box" id="gameOverLevelBox">
               <div class="go-level-header">
                 <span class="go-level-title" id="goLevelTitle">LEVEL 1</span>
@@ -1085,7 +1185,7 @@
               </div>
             </div>
 
-            <!-- Offline Notice (Item 43) -->
+            <!-- Offline Notice -->
             <div id="goOfflineNotice" class="offline-saved-notice hidden">
               <span>📡 You're offline. Your local run is saved safely and will sync on reconnect.</span>
             </div>
@@ -1096,9 +1196,18 @@
                 PLAY AGAIN
               </button>
 
-              <!-- Share Run Result -->
-              <button id="shareScoreBtn" class="btn btn-secondary btn-block" type="button" onclick="window.platform.shareRunResult()">
+              <!-- Dedicated Mobile-Visible Home Button -->
+              <button id="gameOverHomeBtn" class="btn btn-secondary btn-block btn-lg" type="button" onclick="window.platform.exitGameToPlatform()">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                HOME
+              </button>
+
+              <!-- Share Run Result -->
+              <button id="shareScoreBtn" class="btn btn-tertiary btn-block" type="button" onclick="window.platform.shareRunResult()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
                   <circle cx="18" cy="5" r="3"></circle>
                   <circle cx="6" cy="12" r="3"></circle>
                   <circle cx="18" cy="19" r="3"></circle>
@@ -1109,14 +1218,11 @@
               </button>
               
               <div class="modal-actions-subrow">
-                <button class="btn btn-secondary" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('rankings');">
+                <button class="btn btn-tertiary btn-sm" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('rankings');">
                   Leaderboard
                 </button>
-                <button class="btn btn-secondary" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('profile');">
+                <button class="btn btn-tertiary btn-sm" type="button" onclick="window.platform.exitGameToPlatform(); window.platform.switchTab('profile');">
                   Profile
-                </button>
-                <button class="btn btn-tertiary" type="button" onclick="window.platform.exitGameToPlatform();">
-                  Home
                 </button>
               </div>
             </div>
@@ -1125,20 +1231,13 @@
 
       </div>
 
-      <!-- Mobile Touch Controls Zone (56-72px Ergonomic Thumb Targets) -->
-      <div class="mobile-controls-bar" id="mobileControlsBar">
-        <button id="mobileLeftBtn" class="touch-control-btn" aria-label="Steer Left" type="button">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-          </svg>
+      <!-- Mobile Touch Controls Zone (Hidden in favor of full-screen horizontal swipe gestures) -->
+      <div class="mobile-controls-bar hidden" id="mobileControlsBar" style="display: none !important;">
+        <button id="mobileLeftBtn" class="touch-control-btn" aria-label="Steer Left" type="button" style="display: none;">
           <span>LEFT</span>
         </button>
-
-        <button id="mobileRightBtn" class="touch-control-btn" aria-label="Steer Right" type="button">
+        <button id="mobileRightBtn" class="touch-control-btn" aria-label="Steer Right" type="button" style="display: none;">
           <span>RIGHT</span>
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-          </svg>
         </button>
       </div>
 
@@ -1146,42 +1245,162 @@
   </div>
 
   <!-- ==========================================================================
-       AUTHENTICATION MODAL
+       MOBILE CONTROL TUTORIAL MODAL (Item 3)
+       ========================================================================== -->
+  <div id="mobileTutorialModal" class="game-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tutTitle">
+    <div class="screen-modal-card tutorial-card">
+      <div class="tutorial-header">
+        <span class="tutorial-badge">TOUCH FLIGHT CONTROLS</span>
+        <h2 class="modal-title" id="tutTitle">HOW TO PLAY</h2>
+        <p class="modal-desc">Slide your finger left or right to move your starfighter</p>
+      </div>
+
+      <!-- Animated Gesture Demonstration Stage -->
+      <div class="tutorial-anim-stage" id="tutorialAnimStage">
+        <div class="tut-motion-track">
+          <div class="tut-track-arrow left">◀</div>
+          <div class="tut-track-line"></div>
+          <div class="tut-track-arrow right">▶</div>
+        </div>
+        <div class="tut-ship" id="tutShip">
+          <div class="tut-ship-glyph">🚀</div>
+          <div class="tut-ship-flame"></div>
+        </div>
+        <div class="tut-hand" id="tutHand">
+          <span class="tut-finger-icon">👆</span>
+          <span class="tut-touch-pulse"></span>
+        </div>
+      </div>
+
+      <div class="tutorial-steps-indicator">
+        <div class="tut-step-text" id="tutStepText">
+          <strong>Touch &bull; Drag Left &bull; Drag Right</strong>
+          <span class="text-secondary text-xs block mt-1">Spaceship smoothly tracks your horizontal movement</span>
+        </div>
+      </div>
+
+      <div class="modal-actions-col mt-4">
+        <button id="tutContinueBtn" class="btn btn-primary btn-block btn-lg" type="button" onclick="window.game ? window.game.dismissTutorial(true) : null">
+          START RUN
+        </button>
+        <button id="tutSkipBtn" class="btn btn-tertiary btn-block" type="button" onclick="window.game ? window.game.dismissTutorial(false) : null">
+          Skip Tutorial
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AUTHENTICATION MODAL (SEPARATE LOG IN & SIGN UP - Item 9)
        ========================================================================== -->
   <div id="authModal" class="platform-modal game-overlay hidden">
-    <div class="screen-modal-card">
+    <div class="screen-modal-card auth-modal-card">
       <div class="modal-header-row">
-        <h2 class="modal-title">Sign In or Register</h2>
-        <button class="modal-close-btn" aria-label="Close" onclick="document.getElementById('authModal').classList.add('hidden')">&times;</button>
+        <div class="auth-tabs-nav" role="tablist">
+          <button id="authTabLoginBtn" class="auth-tab-btn active" type="button" role="tab" aria-selected="true" onclick="window.platform.switchAuthMode('login')">
+            LOG IN
+          </button>
+          <button id="authTabSignupBtn" class="auth-tab-btn" type="button" role="tab" aria-selected="false" onclick="window.platform.switchAuthMode('signup')">
+            SIGN UP
+          </button>
+        </div>
+        <button class="modal-close-btn" aria-label="Close" onclick="window.platform.closeAuthModal()">&times;</button>
       </div>
-      <p class="modal-desc">Save your scores on global leaderboards and backup unlocked cosmetics.</p>
 
-      <!-- Google Sign-In Button -->
-      <button class="btn btn-google btn-block" id="googleAuthBtn" type="button" onclick="window.platform.triggerPlatformNotification('Google Sign-In', 'Connected to Google Identity.', '🔐')">
+      <!-- Alert Box for Friendly Validation Feedback -->
+      <div id="authAlertBox" class="auth-alert-box hidden" role="alert"></div>
+
+      <!-- LOG IN FORM -->
+      <form id="loginForm" class="auth-form-view" novalidate onsubmit="window.platform.handleLoginSubmit(event); return false;">
+        <p class="modal-desc">Access your pilot profile and sync high scores across devices.</p>
+
+        <div class="form-group">
+          <label for="loginEmailInput" class="form-label">Email address</label>
+          <input type="email" id="loginEmailInput" class="form-input" placeholder="pilot@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="loginPasswordInput" class="form-label">Password</label>
+            <button type="button" class="btn-text-link" onclick="window.platform.handleForgotPassword()">Forgot Password?</button>
+          </div>
+          <input type="password" id="loginPasswordInput" class="form-input" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+
+        <button id="loginSubmitBtn" class="btn btn-primary btn-block btn-lg mt-3" type="submit">
+          Log In
+        </button>
+
+        <div class="auth-switch-prompt mt-3">
+          <span>Don't have an account?</span>
+          <button type="button" class="btn-link" onclick="window.platform.switchAuthMode('signup')">Sign Up</button>
+        </div>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="signupForm" class="auth-form-view hidden" novalidate onsubmit="window.platform.handleSignupSubmit(event); return false;">
+        <p class="modal-desc">Create your pilot callsign to compete on regional and global leaderboards.</p>
+
+        <div class="form-group">
+          <label for="signupUsernameInput" class="form-label">Username</label>
+          <input type="text" id="signupUsernameInput" class="form-input" placeholder="NovaPilot" minlength="3" maxlength="16" autocomplete="username" required>
+          <span class="field-hint">3–16 letters, numbers, or underscore</span>
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmailInput" class="form-label">Email address</label>
+          <input type="email" id="signupEmailInput" class="form-input" placeholder="pilot@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupPasswordInput" class="form-label">Password</label>
+          <input type="password" id="signupPasswordInput" class="form-input" placeholder="Minimum 6 characters" minlength="6" autocomplete="new-password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupConfirmPasswordInput" class="form-label">Confirm Password</label>
+          <input type="password" id="signupConfirmPasswordInput" class="form-input" placeholder="Re-enter password" minlength="6" autocomplete="new-password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupCountrySelect" class="form-label">Country / Region</label>
+          <select id="signupCountrySelect" class="form-select">
+            <option value="🇺🇸 US">🇺🇸 United States</option>
+            <option value="🇬🇧 GB">🇬🇧 United Kingdom</option>
+            <option value="🇯🇵 JP">🇯🇵 Japan</option>
+            <option value="🇩🇪 DE">🇩🇪 Germany</option>
+            <option value="🇫🇷 FR">🇫🇷 France</option>
+            <option value="🇨🇦 CA">🇨🇦 Canada</option>
+            <option value="🇦🇺 AU">🇦🇺 Australia</option>
+            <option value="🇧🇷 BR">🇧🇷 Brazil</option>
+            <option value="🇰🇷 KR">🇰🇷 South Korea</option>
+            <option value="🇮🇳 IN">🇮🇳 India</option>
+            <option value="🌍 GL" selected>🌍 Global Sector</option>
+          </select>
+        </div>
+
+        <button id="signupSubmitBtn" class="btn btn-primary btn-block btn-lg mt-3" type="submit">
+          Create Account
+        </button>
+
+        <div class="auth-switch-prompt mt-3">
+          <span>Already have an account?</span>
+          <button type="button" class="btn-link" onclick="window.platform.switchAuthMode('login')">Log In</button>
+        </div>
+      </form>
+
+      <!-- VISUALLY SEPARATED GOOGLE AUTH -->
+      <div class="auth-divider"><span>or continue with</span></div>
+
+      <button class="btn btn-google btn-block" id="googleAuthBtn" type="button" onclick="window.platform.handleGoogleAuth()">
         <svg viewBox="0 0 24 24" width="18" height="18">
           <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
           <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
           <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
           <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
         </svg>
-        <span>Continue with Google</span>
+        <span>Sign in with Google</span>
       </button>
-
-      <div class="auth-divider"><span>or with email</span></div>
-
-      <form id="emailAuthForm" onsubmit="return false;">
-        <div class="form-group">
-          <label for="authEmailInput" class="form-label">Email address</label>
-          <input type="email" id="authEmailInput" class="form-input" placeholder="you@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="authPasswordInput" class="form-label">Password</label>
-          <input type="password" id="authPasswordInput" class="form-input" placeholder="••••••••" required>
-        </div>
-        <button class="btn btn-primary btn-block mt-3" type="submit" onclick="window.platform.triggerPlatformNotification('Welcome Back', 'Logged in successfully.', '🚀'); document.getElementById('authModal').classList.add('hidden');">
-          Sign In
-        </button>
-      </form>
     </div>
   </div>
 

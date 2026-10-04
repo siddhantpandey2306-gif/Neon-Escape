@@ -2977,3 +2977,397 @@ html, body {
   color: var(--accent-primary, #2563eb);
 }
 
+/* ==========================================================================
+   MOBILE UX, TUTORIAL, AUTH & GAMEPLAY POLISH (Items 1-15)
+   ========================================================================== */
+
+/* Safe area support for notch and gesture bar */
+.platform-top-bar {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+.gameplay-modal-wrapper {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.gameplay-top-bar {
+  padding-top: max(8px, env(safe-area-inset-top));
+}
+
+.gameplay-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gameplay-home-btn {
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(37, 99, 235, 0.22);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-btn);
+  transition: all var(--transition-fast);
+}
+
+.gameplay-home-btn:hover, .gameplay-home-btn:active {
+  background: rgba(37, 99, 235, 0.45);
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.view-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-view-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  flex-shrink: 0;
+}
+
+/* One-Life HUD */
+.hud-hull-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #f87171;
+  letter-spacing: 0.05em;
+  margin-left: 4px;
+}
+
+/* Game Over Screen Primary Stats */
+.game-over-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.game-over-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.game-over-primary-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-card);
+  padding: 14px 20px;
+  margin-bottom: 12px;
+}
+
+.go-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.go-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.go-score-divider {
+  width: 1px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.game-over-time-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+}
+
+.time-strip-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+}
+
+.time-strip-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+  font-family: ui-monospace, monospace;
+}
+
+.pb-celebration {
+  background: linear-gradient(135deg, #f59e0b, #eab308);
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px auto 0;
+  animation: pb-celebrate-glow 1.5s ease-in-out infinite alternate;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+}
+
+@keyframes pb-celebrate-glow {
+  0% { transform: scale(0.98); box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+  100% { transform: scale(1.03); box-shadow: 0 0 22px rgba(245, 158, 11, 0.65); }
+}
+
+/* Mobile Tutorial Stage */
+#mobileTutorialModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 250;
+  display: flex;
+}
+
+#mobileTutorialModal.hidden {
+  display: none !important;
+}
+
+.tutorial-card {
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  background: #0f172a;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(37, 99, 235, 0.2);
+}
+
+.tutorial-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.tutorial-anim-stage {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.8) 75%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 16px 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tut-motion-track {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.tut-track-line {
+  flex-grow: 1;
+  height: 2px;
+  background: dashed rgba(255, 255, 255, 0.2);
+  margin: 0 10px;
+}
+
+.tut-track-arrow {
+  color: rgba(56, 189, 248, 0.6);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.tut-ship {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px;
+  animation: tut-ship-glide 3.6s ease-in-out infinite;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px #38bdf8);
+}
+
+.tut-hand {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  animation: tut-hand-swipe 3.6s ease-in-out infinite;
+  z-index: 3;
+}
+
+.tut-touch-pulse {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.4);
+  transform: translate(-50%, -50%);
+  animation: tut-pulse 1.8s infinite;
+}
+
+@keyframes tut-ship-glide {
+  0%   { left: 50%; transform: translateX(-50%) rotate(0deg); }
+  25%  { left: 24%; transform: translateX(-50%) rotate(-12deg); }
+  50%  { left: 50%; transform: translateX(-50%) rotate(0deg); }
+  75%  { left: 76%; transform: translateX(-50%) rotate(12deg); }
+  100% { left: 50%; transform: translateX(-50%) rotate(0deg); }
+}
+
+@keyframes tut-hand-swipe {
+  0%   { left: 50%; transform: translateX(-50%) scale(1); }
+  25%  { left: 24%; transform: translateX(-50%) scale(1.05); }
+  50%  { left: 50%; transform: translateX(-50%) scale(1); }
+  75%  { left: 76%; transform: translateX(-50%) scale(1.05); }
+  100% { left: 50%; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes tut-pulse {
+  0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+.tutorial-steps-indicator {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+/* Authentication Modal Tabs & Controls */
+.auth-tabs-nav {
+  display: flex;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light, #e2e8f0);
+}
+
+.auth-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.auth-tab-btn.active {
+  background: var(--accent-primary, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+.auth-alert-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.auth-alert-box.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-text-link {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--accent-primary, #2563eb);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.btn-text-link:hover {
+  text-decoration: underline;
+}
+
+.auth-switch-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+  margin-top: 4px;
+  display: block;
+}
+
+/* Optimistic Mission Claim States */
+.claim-mission-btn.claiming {
+  opacity: 0.7;
+  pointer-events: none;
+  cursor: wait;
+}
+
+.claim-mission-btn.claimed {
+  background: #10b981 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+  cursor: default;
+}
+
+

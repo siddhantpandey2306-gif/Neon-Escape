@@ -105,6 +105,7 @@ class PlatformController {
     this.startMissionsCountdown();
     this.initOfflineSync();
     this.bindPlatformNavigation();
+    this.initAuthUi();
     this.renderHeaderUserBar();
     this.renderCurrentTab();
     this.startSeasonTimer();
@@ -463,6 +464,9 @@ class PlatformController {
   }
 
   claimMission(missionId) {
+    if (!this.claimingMissions) this.claimingMissions = new Set();
+    if (this.claimingMissions.has(missionId)) return;
+
     const allMissions = [
       ...(this.dailyMissions || []),
       ...(this.weeklyMissions || []),
@@ -471,27 +475,74 @@ class PlatformController {
     const mission = allMissions.find(m => m.id === missionId);
     if (!mission || mission.claimed || mission.current < mission.target) return;
 
+    // Lock to prevent duplicate claims
+    this.claimingMissions.add(missionId);
+
+    // Save rollback snapshot
+    const prevClaimed = mission.claimed;
+    const prevXp = this.currentUser.xp;
+    const prevCoins = this.currentUser.coins;
+    const prevLevel = this.currentUser.level;
+
+    // Optimistic UI updates (Immediate, zero-lag response)
     mission.claimed = true;
     this.addXp(mission.xp);
     this.addCoins(mission.coins);
 
+    let unlockedCosmetic = null;
     if (mission.cosmetic) {
       if (mission.cosmetic.includes('Ship') && !this.currentUser.unlockedShips.includes('spectre')) {
         this.currentUser.unlockedShips.push('spectre');
+        unlockedCosmetic = mission.cosmetic;
       } else if (mission.cosmetic.includes('Trail') && !this.currentUser.unlockedTrails.includes('cosmic')) {
         this.currentUser.unlockedTrails.push('cosmic');
+        unlockedCosmetic = mission.cosmetic;
       } else if (mission.cosmetic.includes('Frame') && !this.currentUser.unlockedFrames.includes('amethyst')) {
         this.currentUser.unlockedFrames.push('amethyst');
+        unlockedCosmetic = mission.cosmetic;
       }
     }
 
+    // Persist local state immediately
     this.saveMissionsData();
     this.saveUserSession();
     this.renderHeaderUserBar();
+    if (this.activeTab === 'missions') this.renderMissionsTab();
+    if (this.activeTab === 'play') this.renderPlayTab();
 
-    const cosmeticNote = mission.cosmetic ? ` + 🏆 ${mission.cosmetic} Unlocked!` : '';
-    this.triggerPlatformNotification(`✓ MISSION COMPLETED`, `+${mission.xp} XP & +${mission.coins} Coins claimed!${cosmeticNote}`, '🎯');
-    this.renderMissionsTab();
+    // Reward sound & celebration
+    if (window.game && window.game.audio) {
+      window.game.audio.playMilestone();
+    }
+
+    const cosmeticNote = unlockedCosmetic ? ` + 🏆 ${unlockedCosmetic} Unlocked!` : '';
+    this.triggerPlatformNotification(`✓ REWARD CLAIMED`, `+${mission.xp} XP & +${mission.coins} Coins!${cosmeticNote}`, '🎯');
+
+    // Asynchronous Cloud Firestore Sync (Non-blocking)
+    const syncPromise = (window.FirebaseBridge && window.FirebaseBridge.isLive && !this.currentUser.isGuest)
+      ? window.FirebaseBridge.db.collection('profiles').doc(this.currentUser.uid).set(this.currentUser, { merge: true })
+      : Promise.resolve();
+
+    syncPromise
+      .catch((err) => {
+        console.error('[Platform] Firebase mission claim sync failed, rolling back:', err);
+        // Rollback on server rejection
+        mission.claimed = prevClaimed;
+        this.currentUser.xp = prevXp;
+        this.currentUser.coins = prevCoins;
+        this.currentUser.level = prevLevel;
+        this.saveMissionsData();
+        this.saveUserSession();
+        this.renderHeaderUserBar();
+        if (this.activeTab === 'missions') this.renderMissionsTab();
+        if (this.activeTab === 'play') this.renderPlayTab();
+        this.triggerPlatformNotification('Sync Failed', 'Could not sync mission reward with cloud. Please retry.', '⚠️');
+      })
+      .finally(() => {
+        this.claimingMissions.delete(missionId);
+        if (this.activeTab === 'missions') this.renderMissionsTab();
+        if (this.activeTab === 'play') this.renderPlayTab();
+      });
   }
 
   // --- OFFLINE TELEMETRY SYNC ---
@@ -682,6 +733,7 @@ class PlatformController {
       verified: true,
       score: verifiedScore,
       isNewPersonalBest,
+      personalBest: stats.bestScore,
       earnedXp,
       earnedCoins,
       globalRank: rankInfo.rank,
@@ -1068,11 +1120,14 @@ class PlatformController {
               <strong style="display: block; font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${this.escapeHtml(m.title)}</strong>
               <span class="text-xs text-secondary">+${m.xp} XP • +${m.coins} 🪙</span>
             </div>
-            ${m.claimed 
-              ? '<span class="badge-chip">Claimed</span>' 
-              : (isComplete 
-                  ? `<button class="btn btn-sm btn-primary" onclick="window.platform.claimMission('${m.id}')">Claim</button>`
-                  : `<span class="badge-chip">${pct}%</span>`
+            ${this.claimingMissions && this.claimingMissions.has(m.id)
+              ? '<button class="btn btn-sm btn-primary claiming" disabled>Claiming...</button>'
+              : (m.claimed 
+                  ? '<span class="badge-chip">Claimed</span>' 
+                  : (isComplete 
+                      ? `<button class="btn btn-sm btn-primary" onclick="window.platform.claimMission('${m.id}')">Claim</button>`
+                      : `<span class="badge-chip">${pct}%</span>`
+                    )
                 )
             }
           </div>
@@ -1310,7 +1365,11 @@ class PlatformController {
       let stateBadge = `<span class="badge-chip">Not Started</span>`;
       let actionHtml = `<button class="btn btn-sm btn-secondary" disabled>0 / ${m.target}</button>`;
 
-      if (m.claimed) {
+      if (this.claimingMissions && this.claimingMissions.has(m.id)) {
+        stateClass = 'state-completed';
+        stateBadge = `<span class="badge-chip state-chip-ready">Claiming...</span>`;
+        actionHtml = `<button class="btn btn-sm btn-primary claim-mission-btn claiming" disabled>CLAIMING...</button>`;
+      } else if (m.claimed) {
         stateClass = 'state-claimed';
         stateBadge = `<span class="badge-chip state-chip-claimed">✓ Claimed</span>`;
         actionHtml = `<button class="btn btn-sm btn-secondary" disabled>✓ Claimed</button>`;
@@ -1769,16 +1828,264 @@ class PlatformController {
     if (window.FirebaseBridge && window.FirebaseBridge.auth) {
       window.FirebaseBridge.auth.signOut().catch(() => {});
     }
-    this.currentUser = this.createInitialProfile();
+    this.createGuestUser();
     this.saveUserSession();
     this.renderHeaderUserBar();
     this.switchTab('play');
     this.triggerPlatformNotification('Logged Out', 'Reverted to offline guest profile.', '👋');
   }
 
-  // --- TAB: HOW TO PLAY ---
+  // --- TAB: HOW TO PLAY & TUTORIAL ---
   renderHowToPlayTab() {
     // Content rendered directly in HTML
+  }
+
+  replayTutorial() {
+    if (window.game && typeof window.game.replayTutorial === 'function') {
+      window.game.replayTutorial();
+    } else {
+      const modal = document.getElementById('mobileTutorialModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+  }
+
+  // --- SEPARATE SIGN UP & LOG IN AUTHENTICATION SYSTEM ---
+  switchAuthMode(mode) {
+    this.clearAuthError();
+    const tabLogin = document.getElementById('authTabLoginBtn') || document.getElementById('authTabLogin');
+    const tabSignup = document.getElementById('authTabSignupBtn') || document.getElementById('authTabSignup');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (mode === 'signup') {
+      if (tabSignup) { tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected', 'true'); }
+      if (tabLogin) { tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected', 'false'); }
+      if (signupForm) signupForm.classList.remove('hidden');
+      if (loginForm) loginForm.classList.add('hidden');
+    } else {
+      if (tabLogin) { tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected', 'true'); }
+      if (tabSignup) { tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected', 'false'); }
+      if (loginForm) loginForm.classList.remove('hidden');
+      if (signupForm) signupForm.classList.add('hidden');
+    }
+  }
+
+  closeAuthModal() {
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.classList.add('hidden');
+    this.clearAuthError();
+  }
+
+  async handleLoginSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    this.clearAuthError();
+    const email = (document.getElementById('loginEmailInput') || document.getElementById('loginEmail'))?.value.trim();
+    const password = (document.getElementById('loginPasswordInput') || document.getElementById('loginPassword'))?.value;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      this.showAuthError('Invalid email');
+      return;
+    }
+    if (!password || password.length < 6) {
+      this.showAuthError('Incorrect password');
+      return;
+    }
+
+    const submitBtn = document.getElementById('loginSubmitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'LOGGING IN...'; }
+
+    try {
+      if (window.FirebaseBridge && window.FirebaseBridge.isLive && window.FirebaseBridge.auth) {
+        const userCred = await window.FirebaseBridge.auth.signInWithEmailAndPassword(email, password);
+        const doc = await window.FirebaseBridge.db.collection('profiles').doc(userCred.user.uid).get();
+        if (doc.exists) {
+          this.currentUser = doc.data();
+        } else {
+          this.currentUser.uid = userCred.user.uid;
+          this.currentUser.email = email;
+          this.currentUser.isGuest = false;
+        }
+      } else {
+        this.currentUser.email = email;
+        this.currentUser.isGuest = false;
+        this.currentUser.displayName = email.split('@')[0];
+      }
+
+      this.saveUserSession();
+      this.renderHeaderUserBar();
+      this.renderProfileTab();
+      this.closeAuthModal();
+      this.triggerPlatformNotification('Welcome Back!', `Logged in as ${this.currentUser.displayName || this.currentUser.username}.`, '🛸');
+    } catch (err) {
+      const code = err.code || '';
+      if (code === 'auth/invalid-email') {
+        this.showAuthError('Invalid email');
+      } else if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        this.showAuthError('Incorrect password');
+      } else if (code === 'auth/too-many-requests') {
+        this.showAuthError('Too many attempts. Please try again later.');
+      } else {
+        this.showAuthError(err.message || 'Incorrect password');
+      }
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'LOG IN'; }
+    }
+  }
+
+  async handleSignupSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    this.clearAuthError();
+    const username = (document.getElementById('signupUsernameInput') || document.getElementById('signupUsername'))?.value.trim();
+    const email = (document.getElementById('signupEmailInput') || document.getElementById('signupEmail'))?.value.trim();
+    const password = (document.getElementById('signupPasswordInput') || document.getElementById('signupPassword'))?.value;
+    const confirmPassword = (document.getElementById('signupConfirmPasswordInput') || document.getElementById('signupConfirmPassword'))?.value;
+    const country = (document.getElementById('signupCountryInput') || document.getElementById('signupCountry'))?.value || '🌍 GL';
+
+    if (!username || username.length < 3) {
+      this.showAuthError('Username must be at least 3 characters');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      this.showAuthError('Invalid email');
+      return;
+    }
+    if (!password || password.length < 6) {
+      this.showAuthError('Password too weak');
+      return;
+    }
+    if (password !== confirmPassword) {
+      this.showAuthError('Passwords do not match');
+      return;
+    }
+
+    const submitBtn = document.getElementById('signupSubmitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'CREATING ACCOUNT...'; }
+
+    try {
+      if (window.FirebaseBridge && window.FirebaseBridge.isLive && window.FirebaseBridge.auth) {
+        const userCred = await window.FirebaseBridge.auth.createUserWithEmailAndPassword(email, password);
+        this.currentUser.uid = userCred.user.uid;
+        this.currentUser.email = email;
+        this.currentUser.username = username;
+        this.currentUser.displayName = username;
+        this.currentUser.country = country;
+        this.currentUser.isGuest = false;
+        await window.FirebaseBridge.db.collection('profiles').doc(userCred.user.uid).set(this.currentUser, { merge: true });
+      } else {
+        this.currentUser.uid = 'pilot_' + Date.now();
+        this.currentUser.email = email;
+        this.currentUser.username = username;
+        this.currentUser.displayName = username;
+        this.currentUser.country = country;
+        this.currentUser.isGuest = false;
+      }
+
+      this.saveUserSession();
+      this.renderHeaderUserBar();
+      this.renderProfileTab();
+      this.closeAuthModal();
+      this.triggerPlatformNotification('Account Created!', `Welcome aboard, Pilot ${username}!`, '🚀');
+    } catch (err) {
+      const code = err.code || '';
+      if (code === 'auth/email-already-in-use') {
+        this.showAuthError('Email already in use');
+      } else if (code === 'auth/invalid-email') {
+        this.showAuthError('Invalid email');
+      } else if (code === 'auth/weak-password') {
+        this.showAuthError('Password too weak');
+      } else {
+        this.showAuthError(err.message || 'Email already in use');
+      }
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'CREATE ACCOUNT'; }
+    }
+  }
+
+  async handleForgotPassword() {
+    this.clearAuthError();
+    const email = (document.getElementById('loginEmailInput') || document.getElementById('loginEmail'))?.value.trim();
+    if (!email) {
+      this.showAuthError('Enter your email address to reset password');
+      return;
+    }
+    if (window.FirebaseBridge && window.FirebaseBridge.isLive && window.FirebaseBridge.auth) {
+      try {
+        await window.FirebaseBridge.auth.sendPasswordResetEmail(email);
+        this.triggerPlatformNotification('Reset Email Sent', `Password reset instructions dispatched to ${email}.`, '📧');
+      } catch (err) {
+        this.showAuthError(err.message || 'Unable to send reset email');
+      }
+    } else {
+      this.triggerPlatformNotification('Password Reset', `Reset instructions sent to ${email} (Local Simulation).`, '📧');
+    }
+  }
+
+  async handleGoogleAuth() {
+    this.clearAuthError();
+    if (window.FirebaseBridge && window.FirebaseBridge.isLive && window.firebase) {
+      try {
+        const provider = new window.firebase.auth.GoogleAuthProvider();
+        const result = await window.FirebaseBridge.auth.signInWithPopup(provider);
+        const user = result.user;
+        this.currentUser.uid = user.uid;
+        this.currentUser.email = user.email || '';
+        this.currentUser.displayName = user.displayName || this.currentUser.username;
+        this.currentUser.isGuest = false;
+        await window.FirebaseBridge.db.collection('profiles').doc(user.uid).set(this.currentUser, { merge: true });
+        this.saveUserSession();
+        this.renderHeaderUserBar();
+        this.renderProfileTab();
+        this.closeAuthModal();
+        this.triggerPlatformNotification('Google Connected', `Signed in as ${user.displayName || user.email}`, '🌐');
+      } catch (err) {
+        this.showAuthError(err.message || 'Google sign-in could not be completed');
+      }
+    } else {
+      this.currentUser.isGuest = false;
+      this.currentUser.displayName = 'Google Pilot';
+      this.saveUserSession();
+      this.renderHeaderUserBar();
+      this.renderProfileTab();
+      this.closeAuthModal();
+      this.triggerPlatformNotification('Google Connected', 'Simulated Google account linked.', '🌐');
+    }
+  }
+
+  initAuthUi() {
+    const tabLogin = document.getElementById('authTabLoginBtn') || document.getElementById('authTabLogin');
+    const tabSignup = document.getElementById('authTabSignupBtn') || document.getElementById('authTabSignup');
+    const closeBtn = document.getElementById('authModalCloseBtn');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const toSignupLink = document.getElementById('toSignupLink');
+    const toLoginLink = document.getElementById('toLoginLink');
+
+    if (tabLogin) tabLogin.addEventListener('click', () => this.switchAuthMode('login'));
+    if (tabSignup) tabSignup.addEventListener('click', () => this.switchAuthMode('signup'));
+    if (toSignupLink) toSignupLink.addEventListener('click', (e) => { e.preventDefault(); this.switchAuthMode('signup'); });
+    if (toLoginLink) toLoginLink.addEventListener('click', (e) => { e.preventDefault(); this.switchAuthMode('login'); });
+    if (closeBtn) closeBtn.addEventListener('click', () => this.closeAuthModal());
+
+    if (loginForm) loginForm.addEventListener('submit', (e) => this.handleLoginSubmit(e));
+    if (signupForm) signupForm.addEventListener('submit', (e) => this.handleSignupSubmit(e));
+  }
+
+  showAuthError(msg) {
+    const errorBox = document.getElementById('authAlertBox') || document.getElementById('authErrorBox');
+    if (errorBox) {
+      errorBox.textContent = msg;
+      errorBox.classList.remove('hidden');
+    }
+  }
+
+  clearAuthError() {
+    const errorBox = document.getElementById('authAlertBox') || document.getElementById('authErrorBox');
+    if (errorBox) {
+      errorBox.textContent = '';
+      errorBox.classList.add('hidden');
+    }
   }
 
   // --- SEASONS TIMER ---
@@ -1865,6 +2172,14 @@ class PlatformController {
 
 // Global instance
 window.platform = new PlatformController();
-window.addEventListener('DOMContentLoaded', () => {
-  window.platform.init();
-});
+function initNeonPlatform() {
+  if (window.platform && !window.platform._initialized) {
+    window.platform._initialized = true;
+    window.platform.init();
+  }
+}
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initNeonPlatform);
+} else {
+  initNeonPlatform();
+}

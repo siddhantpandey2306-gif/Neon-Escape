@@ -204,6 +204,24 @@ class AudioController {
     } catch (e) {}
   }
 
+  playShieldBreak() {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1400, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.30);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.30);
+    } catch (e) {}
+  }
+
   playMilestone() {
     if (this.isMuted || !this.ctx) return;
     try {
@@ -544,7 +562,10 @@ class InputHandler {
     this.right = false;
     this.touchActive = false;
     this.touchTargetX = null;
+    this.lastTouchX = null;
+    this.touchDeltaX = 0;
     this.onPauseRequested = null;
+    this.canvas.style.touchAction = 'none';
     this.initListeners();
   }
 
@@ -565,64 +586,72 @@ class InputHandler {
       if (e.key === 'ArrowRight' || e.code === 'KeyD') this.right = false;
     });
 
-    const leftBtn = document.getElementById('mobileLeftBtn');
-    const rightBtn = document.getElementById('mobileRightBtn');
-
-    // Pointer-events bind for zero-latency mobile touch
-    const bindPointer = (btn, isLeft) => {
-      if (!btn) return;
-      btn.style.touchAction = 'none';
-
-      btn.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        try { btn.setPointerCapture(e.pointerId); } catch (err) {}
-        btn.classList.add('active');
-        if (isLeft) this.left = true; else this.right = true;
-        if (navigator.vibrate) navigator.vibrate(10);
-      });
-
-      const release = (e) => {
-        e.preventDefault();
-        try { btn.releasePointerCapture(e.pointerId); } catch (err) {}
-        btn.classList.remove('active');
-        if (isLeft) this.left = false; else this.right = false;
-      };
-
-      btn.addEventListener('pointerup', release);
-      btn.addEventListener('pointercancel', release);
-      btn.addEventListener('pointerleave', release);
-    };
-
-    bindPointer(leftBtn, true);
-    bindPointer(rightBtn, false);
-
-    // Canvas Direct Touch / Pointer Drag
-    const getCanvasX = (e) => {
+    const getCanvasX = (clientX) => {
       const rect = this.canvas.getBoundingClientRect();
       const scaleX = this.canvas.width / rect.width;
-      return (e.clientX - rect.left) * scaleX;
+      return Math.max(15, Math.min(this.canvas.width - 15, (clientX - rect.left) * scaleX));
     };
 
-    this.canvas.addEventListener('pointerdown', (e) => {
+    // Dedicated Touch Event Handling (touchstart, touchmove, touchend, touchcancel - Item 2)
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        e.preventDefault();
+        const t = e.touches[0];
+        this.touchActive = true;
+        this.touchTargetX = getCanvasX(t.clientX);
+        this.lastTouchX = t.clientX;
+        this.touchDeltaX = 0;
+      }
+    }, { passive: false });
+
+    this.canvas.addEventListener('touchmove', (e) => {
+      if (this.touchActive && e.touches && e.touches.length > 0) {
+        e.preventDefault(); // Prevent accidental scroll
+        const t = e.touches[0];
+        const newCanvasX = getCanvasX(t.clientX);
+        this.touchDeltaX = t.clientX - (this.lastTouchX || t.clientX);
+        this.lastTouchX = t.clientX;
+        this.touchTargetX = newCanvasX;
+      }
+    }, { passive: false });
+
+    const endTouch = (e) => {
+      if (e.cancelable) e.preventDefault();
+      this.touchActive = false;
+      this.touchTargetX = null;
+      this.lastTouchX = null;
+      this.touchDeltaX = 0;
+    };
+
+    this.canvas.addEventListener('touchend', endTouch, { passive: false });
+    this.canvas.addEventListener('touchcancel', endTouch, { passive: false });
+
+    // Desktop Mouse Drag Support for pointer testing
+    let isMouseDown = false;
+    this.canvas.addEventListener('mousedown', (e) => {
       e.preventDefault();
+      isMouseDown = true;
       this.touchActive = true;
-      this.touchTargetX = getCanvasX(e);
+      this.touchTargetX = getCanvasX(e.clientX);
+      this.lastTouchX = e.clientX;
     });
 
-    this.canvas.addEventListener('pointermove', (e) => {
-      if (this.touchActive) {
-        e.preventDefault();
-        this.touchTargetX = getCanvasX(e);
+    window.addEventListener('mousemove', (e) => {
+      if (isMouseDown) {
+        this.touchTargetX = getCanvasX(e.clientX);
+        this.lastTouchX = e.clientX;
       }
     });
 
-    const endCanvas = () => {
-      this.touchActive = false;
-      this.touchTargetX = null;
-    };
-
-    this.canvas.addEventListener('pointerup', endCanvas);
-    this.canvas.addEventListener('pointercancel', endCanvas);
+    window.addEventListener('mouseup', () => {
+      if (isMouseDown) {
+        isMouseDown = false;
+        this.touchActive = false;
+        this.touchTargetX = null;
+        this.lastTouchX = null;
+        this.touchDeltaX = 0;
+      }
+    });
   }
 
   reset() {
@@ -630,7 +659,8 @@ class InputHandler {
     this.right = false;
     this.touchActive = false;
     this.touchTargetX = null;
-    document.querySelectorAll('.touch-control-btn').forEach(b => b.classList.remove('active'));
+    this.lastTouchX = null;
+    this.touchDeltaX = 0;
   }
 }
 
@@ -647,12 +677,13 @@ class Player {
     this.x = canvasWidth / 2;
     this.y = canvasHeight - 120;
     this.vx = 0;
-    this.speed = 520; // Crisp, responsive speed
+    this.speed = 540; // Crisp, responsive speed
     this.tilt = 0;
     this.bobTime = 0;
     this.bobOffsetY = 0;
-    this.lives = 3;
+    this.lives = 1; // ONE-LIFE SYSTEM (Item 16, 18)
     this.hasShield = false;
+    this.shieldDuration = 0; // Short duration shield (Item 6)
     this.invulnerableTimer = 0;
     this.blinkTimer = 0;
   }
@@ -661,8 +692,9 @@ class Player {
     this.x = this.canvasWidth / 2;
     this.y = this.canvasHeight - 120;
     this.vx = 0;
-    this.lives = 3;
+    this.lives = 1; // ONE-LIFE SYSTEM
     this.hasShield = false;
+    this.shieldDuration = 0;
     this.invulnerableTimer = 0;
     this.tilt = 0;
     this.bobTime = 0;
@@ -674,16 +706,17 @@ class Player {
     if (input.left) moveDir -= 1;
     if (input.right) moveDir += 1;
 
+    // Smooth continuous horizontal touch/finger following (Item 2)
     if (moveDir === 0 && input.touchActive && input.touchTargetX !== null) {
       const diff = input.touchTargetX - this.x;
-      if (Math.abs(diff) > 4) {
-        moveDir = Math.sign(diff) * Math.min(1.0, Math.abs(diff) / 22);
+      if (Math.abs(diff) > 2) {
+        moveDir = Math.sign(diff) * Math.min(1.0, Math.abs(diff) / 16);
       }
     }
 
-    // Snappy, immediate acceleration (22 factor vs sluggish 14)
+    // Snappy, immediate acceleration
     const targetVx = moveDir * this.speed;
-    this.vx += (targetVx - this.vx) * 22 * dt;
+    this.vx += (targetVx - this.vx) * 28 * dt;
     this.x += this.vx * dt;
 
     // Boundary constraints
@@ -692,12 +725,20 @@ class Player {
     if (this.x > this.canvasWidth - halfW - 10) { this.x = this.canvasWidth - halfW - 10; this.vx = 0; }
 
     // Banking tilt
-    const targetTilt = Math.max(-1, Math.min(1, this.vx / this.speed)) * 0.26;
-    this.tilt += (targetTilt - this.tilt) * 18 * dt;
+    const targetTilt = Math.max(-1, Math.min(1, this.vx / this.speed)) * 0.28;
+    this.tilt += (targetTilt - this.tilt) * 20 * dt;
 
     // Bobbing
     this.bobTime += dt * 4;
     this.bobOffsetY = Math.sin(this.bobTime) * 3;
+
+    // Countdown shield duration (Item 6: Limited duration)
+    if (this.hasShield) {
+      this.shieldDuration = Math.max(0, this.shieldDuration - dt);
+      if (this.shieldDuration <= 0) {
+        this.hasShield = false;
+      }
+    }
 
     // Thruster engine particles
     if (Math.random() < 0.75) {
@@ -1142,7 +1183,7 @@ class WaveDirector {
     // Handle Random Timed Events
     if (this.nextEventCheck <= 0 && !this.specialEvent) {
       this.triggerRandomEvent(game);
-      this.nextEventCheck = 45.0 + Math.random() * 20.0;
+      this.nextEventCheck = 40.0 + Math.random() * 20.0;
     }
 
     if (this.specialEvent) {
@@ -1156,7 +1197,12 @@ class WaveDirector {
     if (this.waveTimer <= 0) {
       this.spawnNextWavePattern(game);
       const isSlowMo = game.slowMoTimer > 0 || this.specialEvent === 'slow_zone';
-      const baseInterval = isSlowMo ? 1.6 : Math.max(0.68, 1.25 - (game.survivalSeconds * 0.002));
+      // Smooth dynamic difficulty curve (Item 5)
+      // Early game: ~1.35s - 1.15s interval
+      // Mid game: ~1.10s - 0.75s interval
+      // Late game: ~0.70s down to 0.50s interval
+      const diffMultiplier = 1.0 + Math.min(2.0, game.survivalSeconds * 0.015);
+      const baseInterval = isSlowMo ? 1.6 : Math.max(0.50, 1.35 / diffMultiplier);
       this.waveTimer = baseInterval;
     }
   }
@@ -1179,7 +1225,9 @@ class WaveDirector {
 
   spawnNextWavePattern(game) {
     const w = this.canvasWidth;
-    const baseSpeed = 190 + Math.min(220, game.survivalSeconds * 1.4);
+    const survival = game.survivalSeconds;
+    // Smooth dynamic speed curve: starts at 165 px/s, scales up to 420 px/s (Item 5)
+    const baseSpeed = Math.min(420, 165 + survival * 2.2);
 
     // If Energy Rush event active: spawn clusters of crystals
     if (this.specialEvent === 'energy_rush') {
@@ -1204,9 +1252,22 @@ class WaveDirector {
       return;
     }
 
-    this.waveIndex = (this.waveIndex + 1) % 6;
+    // Phased pattern progression based on survival time (Item 5)
+    let availablePatterns;
+    if (survival < 18) {
+      // Early game: gentle, wide space, reward crystals
+      availablePatterns = [0, 2, 0, 1];
+    } else if (survival < 50) {
+      // Mid game: drones, barriers, double meteors
+      availablePatterns = [0, 1, 2, 3, 5];
+    } else {
+      // Late game: multi-hazard, plasma, pinch waves, less reaction time
+      availablePatterns = [1, 2, 3, 4, 5, 6, 7];
+    }
 
-    switch (this.waveIndex) {
+    const patternIndex = availablePatterns[Math.floor(Math.random() * availablePatterns.length)];
+
+    switch (patternIndex) {
       case 0: // Single Meteor + Crystal
         {
           const meteorX = 60 + Math.random() * (w - 120);
@@ -1273,12 +1334,11 @@ class WaveDirector {
 
       case 4: // Fast Plasma Ball in later phases
         {
-          if (game.currentPhase >= 3) {
-            const px = 60 + Math.random() * (w - 120);
-            const plasma = this.pools.plasma.get();
-            plasma.reset(px, -40, baseSpeed * 1.25);
-            game.fallingObjects.push(plasma);
-          }
+          const px = 60 + Math.random() * (w - 120);
+          const plasma = this.pools.plasma.get();
+          plasma.reset(px, -40, baseSpeed * 1.25);
+          game.fallingObjects.push(plasma);
+
           const rare = this.pools.rarecrystal.get();
           rare.reset(w / 2, -50, baseSpeed * 0.9);
           game.fallingObjects.push(rare);
@@ -1302,6 +1362,32 @@ class WaveDirector {
           game.fallingObjects.push(power);
         }
         break;
+
+      case 6: // Late Game: Staggered Drone + Flanking Meteor
+        {
+          const droneX = 80 + Math.random() * (w - 160);
+          const drone = this.pools.drone.get();
+          drone.reset(droneX, -40, baseSpeed * 1.15);
+          game.fallingObjects.push(drone);
+
+          const m = this.pools.meteor.get();
+          m.reset(droneX > w / 2 ? 60 : w - 60, -90, baseSpeed * 1.1);
+          game.fallingObjects.push(m);
+        }
+        break;
+
+      case 7: // Late Game: Precision Evasion Gap (Dual Barrier Pinch)
+        {
+          const gapX = 100 + Math.random() * (w - 200);
+          const b = this.pools.barrier.get();
+          b.reset(w / 2, -40, baseSpeed * 0.95);
+          game.fallingObjects.push(b);
+
+          const rare = this.pools.rarecrystal.get();
+          rare.reset(gapX, -70, baseSpeed * 1.05);
+          game.fallingObjects.push(rare);
+        }
+        break;
     }
   }
 }
@@ -1310,7 +1396,8 @@ class WaveDirector {
    10. MASTER GAME CONTROLLER
    ========================================================================== */
 const GameState = {
-  START: 'START',
+  HOME: 'HOME',
+  TUTORIAL: 'TUTORIAL',
   PLAYING: 'PLAYING',
   PAUSED: 'PAUSED',
   GAME_OVER: 'GAME_OVER'
@@ -1322,7 +1409,7 @@ class NeonEscapeGame {
     this.ctx = this.canvas.getContext('2d', { alpha: false }); // High performance non-alpha canvas
     this.qm = new QualityManager();
 
-    this.state = GameState.START;
+    this.state = GameState.HOME;
     this.lastTime = 0;
     this.rafId = null;
 
@@ -1394,9 +1481,11 @@ class NeonEscapeGame {
       gameplayPlayerName: document.getElementById('gameplayPlayerName'),
       gameplayPlayerLevel: document.getElementById('gameplayPlayerLevel'),
       hearts: [document.getElementById('heart1'), document.getElementById('heart2'), document.getElementById('heart3')],
+      hudLivesPill: document.getElementById('hudLivesPill'),
       comboBadge: document.getElementById('comboBadge'),
       comboMultiplierText: document.getElementById('comboMultiplierText'),
       shieldBadge: document.getElementById('shieldBadge'),
+      shieldTimeText: document.getElementById('shieldTimeText'),
       slowmoBadge: document.getElementById('slowmoBadge'),
       doubleBadge: document.getElementById('doubleBadge'),
       magnetBadge: document.getElementById('magnetBadge'),
@@ -1418,9 +1507,14 @@ class NeonEscapeGame {
       goOfflineNotice: document.getElementById('goOfflineNotice'),
       soundToggleBtn: document.getElementById('inGameSoundToggleBtn'),
       pauseToggleBtn: document.getElementById('pauseToggleBtn'),
+      inGameHomeBtn: document.getElementById('inGameHomeBtn'),
+      gameOverHomeBtn: document.getElementById('gameOverHomeBtn'),
       resumeBtn: document.getElementById('resumeBtn'),
       restartFromPauseBtn: document.getElementById('restartFromPauseBtn'),
-      playAgainBtn: document.getElementById('playAgainBtn')
+      playAgainBtn: document.getElementById('playAgainBtn'),
+      mobileTutorialModal: document.getElementById('mobileTutorialModal'),
+      tutContinueBtn: document.getElementById('tutContinueBtn'),
+      tutSkipBtn: document.getElementById('tutSkipBtn')
     };
 
     this.bindEvents();
@@ -1444,12 +1538,58 @@ class NeonEscapeGame {
     if (this.dom.soundToggleBtn) this.dom.soundToggleBtn.addEventListener('click', () => this.toggleSound());
     if (this.dom.pauseToggleBtn) this.dom.pauseToggleBtn.addEventListener('click', () => this.togglePause());
     if (this.dom.resumeBtn) this.dom.resumeBtn.addEventListener('click', () => this.resumeGame());
-    if (this.dom.restartFromPauseBtn) this.dom.restartFromPauseBtn.addEventListener('click', () => this.startGame());
-    if (this.dom.playAgainBtn) this.dom.playAgainBtn.addEventListener('click', () => this.startGame());
+    if (this.dom.restartFromPauseBtn) this.dom.restartFromPauseBtn.addEventListener('click', () => this.startRun());
+    if (this.dom.playAgainBtn) this.dom.playAgainBtn.addEventListener('click', () => this.startRun());
+    if (this.dom.inGameHomeBtn) this.dom.inGameHomeBtn.addEventListener('click', () => this.exitToHome());
+    if (this.dom.gameOverHomeBtn) this.dom.gameOverHomeBtn.addEventListener('click', () => this.exitToHome());
+    if (this.dom.tutContinueBtn) this.dom.tutContinueBtn.addEventListener('click', () => this.dismissTutorial());
+    if (this.dom.tutSkipBtn) this.dom.tutSkipBtn.addEventListener('click', () => this.dismissTutorial());
+  }
+
+  isMobileDevice() {
+    return (
+      ('ontouchstart' in window) ||
+      (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+      window.innerWidth <= 768
+    );
   }
 
   // --- GAME LIFECYCLE ---
   startGame() {
+    let tutorialSeen = false;
+    try {
+      tutorialSeen = localStorage.getItem('neon_mobile_tutorial_seen') === 'true';
+    } catch (e) {}
+
+    if (this.isMobileDevice() && !tutorialSeen) {
+      this.showTutorial();
+    } else {
+      this.startRun();
+    }
+  }
+
+  showTutorial() {
+    this.state = GameState.TUTORIAL;
+    if (this.dom.mobileTutorialModal) {
+      this.dom.mobileTutorialModal.classList.remove('hidden');
+    }
+  }
+
+  dismissTutorial() {
+    try {
+      localStorage.setItem('neon_mobile_tutorial_seen', 'true');
+    } catch (e) {}
+    if (this.dom.mobileTutorialModal) {
+      this.dom.mobileTutorialModal.classList.add('hidden');
+    }
+    this.startRun();
+  }
+
+  replayTutorial() {
+    this.showTutorial();
+  }
+
+  startRun() {
     // Cancel any existing loop to prevent duplicates
     if (this.rafId) {
       cancelAnimationFrame(this.rafId);
@@ -1503,15 +1643,23 @@ class NeonEscapeGame {
       if (this.dom.gameplayAvatar) this.dom.gameplayAvatar.textContent = window.platform.getAvatarIcon(u.avatar);
       if (this.dom.gameplayPlayerName) this.dom.gameplayPlayerName.textContent = u.displayName || u.username;
       if (this.dom.gameplayPlayerLevel) this.dom.gameplayPlayerLevel.textContent = `LVL ${u.level}`;
-      this.highScore = u.stats.bestScore || 0;
+      this.highScore = (u.stats && typeof u.stats.bestScore === 'number') ? u.stats.bestScore : 0;
     }
 
     this.updateLivesDisplay();
     this.updateHudDom(true);
 
+    if (this.dom.gameplayModal) this.dom.gameplayModal.classList.remove('hidden');
     if (this.dom.pauseScreen) this.dom.pauseScreen.classList.add('hidden');
     if (this.dom.gameOverScreen) this.dom.gameOverScreen.classList.add('hidden');
     if (this.dom.playingHud) this.dom.playingHud.classList.remove('hidden');
+
+    // Ensure Pause button is visible with pause icon
+    if (this.dom.pauseToggleBtn) {
+      this.dom.pauseToggleBtn.style.display = 'inline-flex';
+      this.dom.pauseToggleBtn.textContent = '||';
+      this.dom.pauseToggleBtn.setAttribute('aria-label', 'Pause Game');
+    }
 
     this.state = GameState.PLAYING;
     this.lastTime = performance.now();
@@ -1522,6 +1670,10 @@ class NeonEscapeGame {
     if (this.state === GameState.PLAYING) {
       this.state = GameState.PAUSED;
       if (this.dom.pauseScreen) this.dom.pauseScreen.classList.remove('hidden');
+      if (this.dom.pauseToggleBtn) {
+        this.dom.pauseToggleBtn.textContent = '▶';
+        this.dom.pauseToggleBtn.setAttribute('aria-label', 'Resume Game');
+      }
       this.audio.stopBgm();
     } else if (this.state === GameState.PAUSED) {
       this.resumeGame();
@@ -1531,10 +1683,37 @@ class NeonEscapeGame {
   resumeGame() {
     if (this.state === GameState.PAUSED) {
       if (this.dom.pauseScreen) this.dom.pauseScreen.classList.add('hidden');
+      if (this.dom.pauseToggleBtn) {
+        this.dom.pauseToggleBtn.textContent = '||';
+        this.dom.pauseToggleBtn.setAttribute('aria-label', 'Pause Game');
+      }
       this.state = GameState.PLAYING;
       this.lastTime = performance.now();
       this.audio.startBgm();
       this.rafId = requestAnimationFrame((t) => this.loop(t));
+    }
+  }
+
+  exitToHome() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.state = GameState.HOME;
+    this.audio.stopBgm();
+
+    if (this.dom.pauseToggleBtn) {
+      this.dom.pauseToggleBtn.style.display = 'none';
+    }
+    if (this.dom.pauseScreen) this.dom.pauseScreen.classList.add('hidden');
+    if (this.dom.gameOverScreen) this.dom.gameOverScreen.classList.add('hidden');
+    if (this.dom.playingHud) this.dom.playingHud.classList.add('hidden');
+    if (this.dom.mobileTutorialModal) this.dom.mobileTutorialModal.classList.add('hidden');
+
+    if (window.platform && typeof window.platform.exitGameToPlatform === 'function') {
+      window.platform.exitGameToPlatform();
+    } else if (this.dom.gameplayModal) {
+      this.dom.gameplayModal.classList.add('hidden');
     }
   }
 
@@ -1588,8 +1767,12 @@ class NeonEscapeGame {
 
     // Power-up status badges
     if (this.dom.shieldBadge) {
-      if (this.player.hasShield) this.dom.shieldBadge.classList.remove('hidden');
-      else this.dom.shieldBadge.classList.add('hidden');
+      if (this.player.hasShield) {
+        this.dom.shieldBadge.classList.remove('hidden');
+        if (this.dom.shieldTimeText) this.dom.shieldTimeText.textContent = `${Math.ceil(this.player.shieldDuration)}s`;
+      } else {
+        this.dom.shieldBadge.classList.add('hidden');
+      }
     }
     if (this.dom.slowmoBadge) {
       if (this.slowMoTimer > 0) this.dom.slowmoBadge.classList.remove('hidden');
@@ -1652,78 +1835,104 @@ class NeonEscapeGame {
     this.collectionStreak = 0;
     this.nearMissStreak = 0;
 
-    // Deflect with Shield
+    // Deflect with Shield - absorbs ONE major collision only, breaks immediately
     if (this.player.hasShield) {
       this.player.hasShield = false;
-      this.player.invulnerableTimer = 1.0;
-      this.audio.playShieldDeflect();
-      this.particles.spawnExplosion(this.player.x, this.player.y, 16, '#38BDF8');
-      this.particles.addText('SHIELD DEFLECTED!', this.player.x, this.player.y - 40, '#38BDF8', 16);
-      this.triggerScreenShake(6);
-      if (navigator.vibrate) navigator.vibrate(25);
+      this.player.shieldDuration = 0;
+      this.player.invulnerableTimer = 0.20; // Brief 200ms grace to prevent immediate frame double-hit
+      this.audio.playShieldBreak();
+      this.particles.spawnExplosion(this.player.x, this.player.y, 22, '#38BDF8');
+      this.particles.addText('SHIELD BROKEN!', this.player.x, this.player.y - 40, '#38BDF8', 16);
+      this.triggerScreenShake(7);
+      if (this.dom.shieldBadge) this.dom.shieldBadge.classList.add('hidden');
+      if (navigator.vibrate) navigator.vibrate(30);
       return;
     }
 
-    // Direct Hull Damage
-    this.player.lives--;
+    // Direct Hull Damage (One-Life System: single collision = death)
+    this.player.lives = 0;
     this.updateLivesDisplay();
     this.audio.playHit();
-    this.triggerScreenShake(12);
-    this.particles.spawnExplosion(this.player.x, this.player.y, 25, '#DC2626');
+    this.triggerScreenShake(14);
+    this.particles.spawnExplosion(this.player.x, this.player.y, 30, '#DC2626');
     if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
 
-    if (this.player.lives <= 0) {
-      this.gameOver();
-    } else {
-      this.player.invulnerableTimer = 2.0;
-      this.particles.addText('-1 LIFE', this.player.x, this.player.y - 40, '#EF4444', 18);
-    }
+    this.gameOver();
   }
 
   gameOver() {
     this.state = GameState.GAME_OVER;
+
+    // Cancel animation frame loop
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    // CRITICAL FIX: Hide pause button on death
+    if (this.dom.pauseToggleBtn) {
+      this.dom.pauseToggleBtn.style.display = 'none';
+    }
+
     this.audio.stopBgm();
     this.audio.playGameOver();
 
+    // Preserve previous personal best from profile
+    let previousPb = 0;
+    if (window.platform && window.platform.currentUser && window.platform.currentUser.stats) {
+      previousPb = typeof window.platform.currentUser.stats.bestScore === 'number'
+        ? window.platform.currentUser.stats.bestScore
+        : 0;
+    }
+
     // Submit validated score to platform manager
-    const result = window.platform.submitScore(this.score, this.survivalSeconds, {
-      crystals: this.crystalsCollected,
-      dodges: this.obstaclesDodged,
-      nearMisses: this.nearMissesCount,
-      maxCombo: this.maxCombo,
-      powerups: this.powerupsCollected
-    });
+    let result = { earnedXp: 0, earnedCoins: 0, globalRank: 1, isNewPersonalBest: false };
+    if (window.platform && typeof window.platform.submitScore === 'function') {
+      result = window.platform.submitScore(this.score, this.survivalSeconds, {
+        crystals: this.crystalsCollected,
+        dodges: this.obstaclesDodged,
+        nearMisses: this.nearMissesCount,
+        maxCombo: this.maxCombo,
+        powerups: this.powerupsCollected
+      }) || result;
+    }
+
+    // Determine accurate Personal Best & whether this run beat it
+    const isNewPersonalBest = this.score > previousPb && this.score > 0;
+    const finalPersonalBest = isNewPersonalBest ? this.score : previousPb;
 
     const mins = Math.floor(this.survivalSeconds / 60);
     const secs = Math.floor(this.survivalSeconds % 60);
     const timeFormatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
     if (this.dom.finalScoreVal) this.dom.finalScoreVal.textContent = this.score.toLocaleString();
-    if (this.dom.finalHighScoreVal) this.dom.finalHighScoreVal.textContent = (window.platform.currentUser.stats.bestScore).toLocaleString();
+    if (this.dom.finalHighScoreVal) this.dom.finalHighScoreVal.textContent = finalPersonalBest.toLocaleString();
     if (this.dom.finalTimeVal) this.dom.finalTimeVal.textContent = timeFormatted;
     if (this.dom.finalCrystalsVal) this.dom.finalCrystalsVal.textContent = this.crystalsCollected.toLocaleString();
     if (this.dom.finalDodgesVal) this.dom.finalDodgesVal.textContent = this.obstaclesDodged.toLocaleString();
     if (this.dom.finalNearMissesVal) this.dom.finalNearMissesVal.textContent = this.nearMissesCount.toLocaleString();
-    if (this.dom.finalXpEarnedVal) this.dom.finalXpEarnedVal.textContent = `+${result.earnedXp} XP`;
-    if (this.dom.finalCoinsEarnedVal) this.dom.finalCoinsEarnedVal.textContent = `+${result.earnedCoins} 🪙`;
+    if (this.dom.finalXpEarnedVal) this.dom.finalXpEarnedVal.textContent = `+${result.earnedXp || 0} XP`;
+    if (this.dom.finalCoinsEarnedVal) this.dom.finalCoinsEarnedVal.textContent = `+${result.earnedCoins || 0} 🪙`;
 
     // Global Rank & Best Combo
     if (this.dom.finalGlobalRankVal) this.dom.finalGlobalRankVal.textContent = `#${result.globalRank || 1}`;
     if (this.dom.finalBestComboVal) this.dom.finalBestComboVal.textContent = `x${this.maxCombo}`;
 
     // Level Progression Bar
-    const curLevel = window.platform.currentUser.level;
-    const curXp = window.platform.currentUser.xp;
-    const reqXp = window.platform.getXpForNextLevel(curLevel);
-    const xpPct = Math.min(100, Math.floor((curXp / reqXp) * 100));
+    if (window.platform && window.platform.currentUser) {
+      const curLevel = window.platform.currentUser.level;
+      const curXp = window.platform.currentUser.xp;
+      const reqXp = window.platform.getXpForNextLevel(curLevel);
+      const xpPct = Math.min(100, Math.floor((curXp / reqXp) * 100));
 
-    if (this.dom.goLevelTitle) this.dom.goLevelTitle.textContent = `LEVEL ${curLevel}`;
-    if (this.dom.goLevelXp) this.dom.goLevelXp.textContent = `${curXp.toLocaleString()} / ${reqXp.toLocaleString()} XP`;
-    if (this.dom.goLevelFill) {
-      this.dom.goLevelFill.style.width = '0%';
-      setTimeout(() => {
-        if (this.dom.goLevelFill) this.dom.goLevelFill.style.width = `${xpPct}%`;
-      }, 100);
+      if (this.dom.goLevelTitle) this.dom.goLevelTitle.textContent = `LEVEL ${curLevel}`;
+      if (this.dom.goLevelXp) this.dom.goLevelXp.textContent = `${curXp.toLocaleString()} / ${reqXp.toLocaleString()} XP`;
+      if (this.dom.goLevelFill) {
+        this.dom.goLevelFill.style.width = '0%';
+        setTimeout(() => {
+          if (this.dom.goLevelFill) this.dom.goLevelFill.style.width = `${xpPct}%`;
+        }, 100);
+      }
     }
 
     // Offline run status
@@ -1735,8 +1944,16 @@ class NeonEscapeGame {
       }
     }
 
-    if (result.isNewPersonalBest && this.dom.newBestBadge) this.dom.newBestBadge.classList.remove('hidden');
-    else if (this.dom.newBestBadge) this.dom.newBestBadge.classList.add('hidden');
+    // New Personal Best Celebration Badge ONLY when beaten
+    if (this.dom.newBestBadge) {
+      if (isNewPersonalBest) {
+        this.dom.newBestBadge.classList.remove('hidden');
+        this.dom.newBestBadge.classList.add('celebrating');
+      } else {
+        this.dom.newBestBadge.classList.add('hidden');
+        this.dom.newBestBadge.classList.remove('celebrating');
+      }
+    }
 
     if (result.isNewGlobalRank && this.dom.newGlobalRankBadge) this.dom.newGlobalRankBadge.classList.remove('hidden');
     else if (this.dom.newGlobalRankBadge) this.dom.newGlobalRankBadge.classList.add('hidden');
@@ -1753,6 +1970,16 @@ class NeonEscapeGame {
     // Power-up countdowns
     if (this.slowMoTimer > 0) this.slowMoTimer = Math.max(0, this.slowMoTimer - dt);
     if (this.doubleScoreTimer > 0) this.doubleScoreTimer = Math.max(0, this.doubleScoreTimer - dt);
+
+    // Shield duration countdown & expiration
+    if (this.player.hasShield) {
+      this.player.shieldDuration = Math.max(0, this.player.shieldDuration - dt);
+      if (this.player.shieldDuration <= 0) {
+        this.player.hasShield = false;
+        this.audio.playShieldBreak();
+        this.particles.addText('SHIELD EXPIRED', this.player.x, this.player.y - 40, '#94A3B8', 15);
+      }
+    }
 
     // Magnet Tractor Field
     if (this.magnetTimer > 0) {
@@ -1838,8 +2065,15 @@ class NeonEscapeGame {
           this.addScore(50, true, obj.x, obj.y);
 
           if (obj.subType === 'shield') {
-            this.player.hasShield = true;
-            this.particles.addText('SHIELD EQUIPPED!', obj.x, obj.y - 20, '#2563EB', 18);
+            if (!this.player.hasShield) {
+              this.player.hasShield = true;
+              this.player.shieldDuration = 9.0;
+              this.particles.addText('SHIELD (9s)', obj.x, obj.y - 20, '#2563EB', 18);
+            } else {
+              // Refresh duration without stacking
+              this.player.shieldDuration = Math.max(this.player.shieldDuration, 9.0);
+              this.particles.addText('SHIELD REFRESHED', obj.x, obj.y - 20, '#2563EB', 16);
+            }
           } else if (obj.subType === 'slowmo') {
             this.slowMoTimer = 5.0;
             this.particles.addText('SLOW MOTION 5s!', obj.x, obj.y - 20, '#8B5CF6', 18);
@@ -1975,7 +2209,14 @@ class NeonEscapeGame {
 
 // Global initialization
 window.game = null;
-window.addEventListener('DOMContentLoaded', () => {
-  window.game = new NeonEscapeGame();
-  console.log('[NeonEscape] Optimized Canvas Engine ready.');
-});
+function initNeonGame() {
+  if (!window.game) {
+    window.game = new NeonEscapeGame();
+    console.log('[NeonEscape] Optimized Canvas Engine ready.');
+  }
+}
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initNeonGame);
+} else {
+  initNeonGame();
+}
