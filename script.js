@@ -495,9 +495,13 @@ class ParticleManager {
     const life = 0.18 + Math.random() * 0.12;
 
     let color = '#38BDF8';
-    if (trailType === 'fire') color = Math.random() > 0.5 ? '#F97316' : '#EF4444';
+    if (trailType === 'blue_trail') color = Math.random() > 0.5 ? '#0284c7' : '#38bdf8';
+    else if (trailType === 'gold_trail') color = Math.random() > 0.5 ? '#f59e0b' : '#fbbf24';
+    else if (trailType === 'stardust_trail') color = Math.random() > 0.5 ? '#f8fafc' : '#e2e8f0';
+    else if (trailType === 'aurora_trail') color = Math.random() > 0.5 ? '#10b981' : '#06b6d4';
+    else if (trailType === 'cosmic_trail' || trailType === 'cosmic') color = Math.random() > 0.5 ? '#a855f7' : '#ec4899';
+    else if (trailType === 'fire') color = Math.random() > 0.5 ? '#F97316' : '#EF4444';
     else if (trailType === 'ice') color = Math.random() > 0.5 ? '#7DD3FC' : '#E0F2FE';
-    else if (trailType === 'cosmic') color = Math.random() > 0.5 ? '#A855F7' : '#EC4899';
     else if (trailType === 'rainbow') color = `hsl(${(Date.now() * 0.4) % 360}, 100%, 65%)`;
 
     const p = this.particlePool.get();
@@ -760,26 +764,85 @@ class Player {
     ctx.rotate(this.tilt);
 
     const shipSkin = (window.platform && window.platform.currentUser) ? window.platform.currentUser.equippedShip : 'phantom';
-    let primaryColor = '#2563EB';
-    let secondaryColor = '#1D4ED8';
+    let primaryColor = '#06B6D4';
+    let secondaryColor = '#0284C7';
+    let accentColor = '#38BDF8';
+    let cockpitColor = '#E0F2FE';
 
-    if (shipSkin === 'nova') { primaryColor = '#F59E0B'; secondaryColor = '#D97706'; }
-    else if (shipSkin === 'spectre') { primaryColor = '#8B5CF6'; secondaryColor = '#6D28D9'; }
-    else if (shipSkin === 'eclipse') { primaryColor = '#EC4899'; secondaryColor = '#BE185D'; }
-    else if (shipSkin === 'hyperion') { primaryColor = '#10B981'; secondaryColor = '#059669'; }
+    switch (shipSkin) {
+      case 'blue_comet':
+        primaryColor = '#2563EB';
+        secondaryColor = '#1D4ED8';
+        accentColor = '#60A5FA';
+        cockpitColor = '#DBEAFE';
+        break;
+      case 'solar_runner':
+      case 'nova':
+        primaryColor = '#F59E0B';
+        secondaryColor = '#D97706';
+        accentColor = '#FDE047';
+        cockpitColor = '#FEF3C7';
+        break;
+      case 'crimson_arrow':
+        primaryColor = '#EF4444';
+        secondaryColor = '#B91C1C';
+        accentColor = '#FCA5A5';
+        cockpitColor = '#FEE2E2';
+        break;
+      case 'nebula':
+      case 'spectre':
+        primaryColor = '#8B5CF6';
+        secondaryColor = '#6D28D9';
+        accentColor = '#C4B5FD';
+        cockpitColor = '#EDE9FE';
+        break;
+      case 'aurora':
+      case 'hyperion':
+        primaryColor = '#10B981';
+        secondaryColor = '#047857';
+        accentColor = '#6EE7B7';
+        cockpitColor = '#D1FAE5';
+        break;
+      case 'galaxy':
+      case 'eclipse':
+        primaryColor = '#EC4899';
+        secondaryColor = '#BE185D';
+        accentColor = '#F472B6';
+        cockpitColor = '#FCE7F3';
+        break;
+      case 'void_runner':
+        primaryColor = '#475569';
+        secondaryColor = '#1E293B';
+        accentColor = '#94A3B8';
+        cockpitColor = '#CBD5E1';
+        break;
+      case 'cosmic':
+        primaryColor = '#F43F5E';
+        secondaryColor = '#881337';
+        accentColor = '#A855F7';
+        cockpitColor = '#FFE4E6';
+        break;
+      case 'phantom':
+      default:
+        primaryColor = '#06B6D4';
+        secondaryColor = '#0284C7';
+        accentColor = '#38BDF8';
+        cockpitColor = '#E0F2FE';
+        break;
+    }
 
     // Shield Outer Bubble
     if (this.hasShield) {
       ctx.beginPath();
       ctx.arc(0, 0, this.radius + 14, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
       ctx.fill();
       ctx.strokeStyle = '#38BDF8';
       ctx.lineWidth = 2;
       ctx.stroke();
     }
 
-    // Ship Fuselage
+    // Ship Wings / Outer Hull
     ctx.beginPath();
     ctx.moveTo(0, -this.height / 2);
     ctx.lineTo(this.width / 2, this.height / 2 - 3);
@@ -793,15 +856,35 @@ class Player {
 
     ctx.fillStyle = primaryColor;
     ctx.fill();
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 1.5;
     ctx.stroke();
+
+    // Wing accents / trim
+    ctx.beginPath();
+    ctx.moveTo(0, -this.height / 4);
+    ctx.lineTo(this.width / 2.5, this.height / 2 - 4);
+    ctx.lineTo(this.width / 4, this.height / 2 - 2);
+    ctx.closePath();
+    ctx.fillStyle = secondaryColor;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(0, -this.height / 4);
+    ctx.lineTo(-this.width / 2.5, this.height / 2 - 4);
+    ctx.lineTo(-this.width / 4, this.height / 2 - 2);
+    ctx.closePath();
+    ctx.fillStyle = secondaryColor;
+    ctx.fill();
 
     // Inner cockpit glass
     ctx.beginPath();
     ctx.ellipse(0, -5, 5, 11, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = cockpitColor;
     ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     ctx.restore();
   }
@@ -1111,18 +1194,79 @@ class BackgroundRenderer {
   }
 
   draw(ctx) {
+    const equippedBg = (window.platform && window.platform.currentUser) ? window.platform.currentUser.equippedBackground : 'deep_space';
+    
+    let topColor = '#0a0e1a';
+    let midColor = '#0f172a';
+    let botColor = '#111827';
+    let gridColor = 'rgba(255, 255, 255, 0.04)';
+    let starColor = '#ffffff';
+
+    switch (equippedBg) {
+      case 'blue_nebula':
+        topColor = '#031329';
+        midColor = '#082f49';
+        botColor = '#0c1d37';
+        gridColor = 'rgba(56, 189, 248, 0.07)';
+        starColor = '#bae6fd';
+        break;
+      case 'purple_galaxy':
+        topColor = '#19062e';
+        midColor = '#2e1065';
+        botColor = '#1e1b4b';
+        gridColor = 'rgba(192, 132, 252, 0.07)';
+        starColor = '#e9d5ff';
+        break;
+      case 'meteor_field':
+        topColor = '#1c0d02';
+        midColor = '#451a03';
+        botColor = '#18181b';
+        gridColor = 'rgba(249, 115, 22, 0.07)';
+        starColor = '#fed7aa';
+        break;
+      case 'aurora_space':
+        topColor = '#022c22';
+        midColor = '#064e3b';
+        botColor = '#0f172a';
+        gridColor = 'rgba(52, 211, 153, 0.07)';
+        starColor = '#a7f3d0';
+        break;
+      case 'cosmic_storm':
+        topColor = '#2d0612';
+        midColor = '#4c0519';
+        botColor = '#1e1b4b';
+        gridColor = 'rgba(251, 113, 133, 0.07)';
+        starColor = '#fecdd3';
+        break;
+      case 'deep_void':
+        topColor = '#030305';
+        midColor = '#09090b';
+        botColor = '#000000';
+        gridColor = 'rgba(113, 113, 122, 0.03)';
+        starColor = '#e4e4e7';
+        break;
+      case 'deep_space':
+      default:
+        topColor = '#0a0e1a';
+        midColor = '#0f172a';
+        botColor = '#111827';
+        gridColor = 'rgba(255, 255, 255, 0.04)';
+        starColor = '#ffffff';
+        break;
+    }
+
     // Solid gradient background
     const bgGrad = ctx.createLinearGradient(0, 0, 0, this.height);
-    bgGrad.addColorStop(0, '#0a0e1a');
-    bgGrad.addColorStop(0.6, '#0f172a');
-    bgGrad.addColorStop(1, '#111827');
+    bgGrad.addColorStop(0, topColor);
+    bgGrad.addColorStop(0.6, midColor);
+    bgGrad.addColorStop(1, botColor);
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Subtle space grid
+    // Space grid
     if (this.qm.config.gridAnim) {
       ctx.save();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.strokeStyle = gridColor;
       ctx.lineWidth = 1;
 
       for (let i = 0; i <= 8; i++) {
@@ -1147,7 +1291,7 @@ class BackgroundRenderer {
     for (let star of this.stars) {
       ctx.save();
       ctx.globalAlpha = star.alpha;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = starColor;
       ctx.fillRect(star.x, star.y, star.size, star.size);
       ctx.restore();
     }
@@ -1590,6 +1734,11 @@ class NeonEscapeGame {
   }
 
   startRun() {
+    // Initialize or refresh anti-cheat session token for this run
+    if (window.platform && typeof window.platform.startSession === 'function') {
+      window.platform.startSession();
+    }
+
     // Cancel any existing loop to prevent duplicates
     if (this.rafId) {
       cancelAnimationFrame(this.rafId);
@@ -1905,14 +2054,34 @@ class NeonEscapeGame {
     const secs = Math.floor(this.survivalSeconds % 60);
     const timeFormatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
+    // Calculate accurate balanced rewards (never allow +0 on a valid run)
+    let earnedXp = (result && typeof result.earnedXp === 'number') ? result.earnedXp : 0;
+    let earnedCoins = (result && typeof result.earnedCoins === 'number') ? result.earnedCoins : 0;
+
+    if (earnedXp === 0 && (this.survivalSeconds >= 2 || this.score >= 50)) {
+      earnedXp = Math.max(10, Math.floor(10 + (this.survivalSeconds / 4) + (this.score / 250)));
+    }
+    if (earnedCoins === 0 && (this.survivalSeconds >= 2 || this.score >= 50)) {
+      earnedCoins = Math.max(20, Math.floor(20 + (this.survivalSeconds / 2.6) + (this.score / 60)));
+    }
+
     if (this.dom.finalScoreVal) this.dom.finalScoreVal.textContent = this.score.toLocaleString();
     if (this.dom.finalHighScoreVal) this.dom.finalHighScoreVal.textContent = finalPersonalBest.toLocaleString();
     if (this.dom.finalTimeVal) this.dom.finalTimeVal.textContent = timeFormatted;
     if (this.dom.finalCrystalsVal) this.dom.finalCrystalsVal.textContent = this.crystalsCollected.toLocaleString();
     if (this.dom.finalDodgesVal) this.dom.finalDodgesVal.textContent = this.obstaclesDodged.toLocaleString();
     if (this.dom.finalNearMissesVal) this.dom.finalNearMissesVal.textContent = this.nearMissesCount.toLocaleString();
-    if (this.dom.finalXpEarnedVal) this.dom.finalXpEarnedVal.textContent = `+${result.earnedXp || 0} XP`;
-    if (this.dom.finalCoinsEarnedVal) this.dom.finalCoinsEarnedVal.textContent = `+${result.earnedCoins || 0} 🪙`;
+    if (this.dom.finalXpEarnedVal) this.dom.finalXpEarnedVal.textContent = `+${earnedXp} XP`;
+    if (this.dom.finalCoinsEarnedVal) {
+      this.dom.finalCoinsEarnedVal.textContent = `+${earnedCoins} 🪙`;
+      this.dom.finalCoinsEarnedVal.classList.remove('coin-pulse');
+      void this.dom.finalCoinsEarnedVal.offsetWidth;
+      this.dom.finalCoinsEarnedVal.classList.add('coin-pulse');
+    }
+
+    if (window.platform && typeof window.platform.updateAllCoinDisplays === 'function') {
+      window.platform.updateAllCoinDisplays();
+    }
 
     // Global Rank & Best Combo
     if (this.dom.finalGlobalRankVal) this.dom.finalGlobalRankVal.textContent = `#${result.globalRank || 1}`;

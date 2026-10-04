@@ -380,18 +380,9 @@
         <!-- ================= VIEW: RANKINGS / LEADERBOARDS ================= -->
         <section id="tab-rankings" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Leaderboards</h1>
-                <p class="page-desc">Real-time competitive rankings across all sectors.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Leaderboards</h1>
+              <p class="page-desc">Real-time competitive rankings across all sectors.</p>
             </div>
             
             <!-- Category Tabs -->
@@ -452,18 +443,9 @@
         <!-- ================= VIEW: PROFILE ================= -->
         <section id="tab-profile" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Player Profile</h1>
-                <p class="page-desc">Your personal career telemetry, milestones, and identity.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Player Profile</h1>
+              <p class="page-desc">Your career progression, combat telemetry, and active cosmetic loadout.</p>
             </div>
             <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
           </div>
@@ -481,6 +463,7 @@
               </div>
               <div class="profile-sub-row">
                 <span>Player ID: <strong id="profilePlayerId">NE-XXXXXX</strong></span>
+                <span class="profile-joined-text" id="profileJoinedDate">Joined Oct 2026</span>
               </div>
               <div class="profile-xp-track">
                 <div class="xp-labels-row">
@@ -494,36 +477,61 @@
             </div>
           </div>
 
-          <!-- Profile Badges Strip -->
-          <div class="profile-badges-strip">
-            <span class="badge-tag">Season 01 Cadet</span>
-            <span class="badge-tag">Top 5% Escapist</span>
-            <span class="badge-tag">Evasion Ace</span>
-            <span class="badge-tag">Combo Master</span>
-          </div>
-
-          <!-- Career Statistics 5x2 Grid -->
-          <h2 class="section-title mt-6">Career Statistics</h2>
-          <div class="stats-grid">
-            <div class="stat-box">
-              <span class="stat-box-label">Best Score</span>
+          <!-- Profile Quick Metrics Row (Rank, PB, Coins, Achievements) -->
+          <div class="profile-key-metrics-grid mt-4">
+            <div class="stat-box highlight-card">
+              <span class="stat-box-label">Global Rank</span>
+              <span class="stat-box-val text-primary" id="profileRankVal">#--</span>
+            </div>
+            <div class="stat-box highlight-card">
+              <span class="stat-box-label">Personal Best</span>
               <span class="stat-box-val highlight-score" id="statBestScore">0</span>
             </div>
+            <div class="stat-box highlight-card">
+              <span class="stat-box-label">Neon Coins</span>
+              <span class="stat-box-val text-warning" id="profileCoins">150 🪙</span>
+            </div>
+            <div class="stat-box highlight-card">
+              <span class="stat-box-label">Achievements</span>
+              <span class="stat-box-val" id="profileAchievementsCount">0 / 18</span>
+            </div>
+          </div>
+
+          <!-- Equipped Loadout Card -->
+          <div class="surface-card profile-loadout-card mt-4">
+            <div class="card-header-row">
+              <div>
+                <span class="card-eyebrow">EQUIPPED CUSTOMIZATION</span>
+                <h3 class="card-title">Active Loadout</h3>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="window.platform.switchTab('garage')">Customize in Garage &rarr;</button>
+            </div>
+            <div class="profile-loadout-items-grid">
+              <div class="loadout-item-card">
+                <span class="loadout-item-type">SPACESHIP</span>
+                <span class="loadout-item-name" id="profileEquippedShipName">Default Ship</span>
+              </div>
+              <div class="loadout-item-card">
+                <span class="loadout-item-type">BACKGROUND</span>
+                <span class="loadout-item-name" id="profileEquippedBgName">Deep Space</span>
+              </div>
+              <div class="loadout-item-card">
+                <span class="loadout-item-type">THRUSTER TRAIL</span>
+                <span class="loadout-item-name" id="profileEquippedTrailName">Plasma</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flight Telemetry Grid (Total Score & Total Survival Time Removed) -->
+          <h2 class="section-title mt-6">Flight Telemetry</h2>
+          <div class="stats-grid">
             <div class="stat-box">
               <span class="stat-box-label">Games Played</span>
               <span class="stat-box-val" id="statGamesPlayed">0</span>
             </div>
             <div class="stat-box">
-              <span class="stat-box-label">Total Score</span>
-              <span class="stat-box-val" id="statTotalScore">0</span>
-            </div>
-            <div class="stat-box">
               <span class="stat-box-label">Longest Survival</span>
               <span class="stat-box-val" id="statLongestRun">00:00</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-box-label">Total Survival Time</span>
-              <span class="stat-box-val" id="statTotalSurvival">00:00</span>
             </div>
             <div class="stat-box">
               <span class="stat-box-label">Crystals Collected</span>
@@ -551,18 +559,9 @@
         <!-- ================= VIEW: MISSIONS ================= -->
         <section id="tab-missions" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Missions &amp; Directives</h1>
-                <p class="page-desc">Complete tactical objectives to earn XP, Neon Coins, and build your daily streak.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Missions &amp; Directives</h1>
+              <p class="page-desc">Complete tactical directives to earn XP, Neon Coins, and build your streak.</p>
             </div>
             <div class="mission-header-stats">
               <span class="timer-pill" id="missionsResetCountdown">Reset in 08:42:17</span>
@@ -570,11 +569,10 @@
             </div>
           </div>
 
-          <!-- Mission Category Tabs (Items 25, 27) -->
+          <!-- Mission Category Tabs (Items 10, 11, 12) -->
           <div class="filter-segmented-control mb-4">
-            <button class="segment-btn active" id="missionTabDaily" onclick="window.platform.setMissionCategory('daily')">Daily Missions</button>
-            <button class="segment-btn" id="missionTabWeekly" onclick="window.platform.setMissionCategory('weekly')">Weekly Goals</button>
-            <button class="segment-btn" id="missionTabSeasonal" onclick="window.platform.setMissionCategory('seasonal')">Seasonal Directives</button>
+            <button class="segment-btn active" id="missionTabDaily" onclick="window.platform.setMissionCategory('daily')">Daily Missions (5)</button>
+            <button class="segment-btn" id="missionTabWeekly" onclick="window.platform.setMissionCategory('weekly')">Weekly Missions (7)</button>
           </div>
 
           <div class="missions-list" id="missionsListContainer">
@@ -585,18 +583,9 @@
         <!-- ================= VIEW: ACHIEVEMENTS ================= -->
         <section id="tab-achievements" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Achievements</h1>
-                <p class="page-desc">Unlock career badges, titles, and coin rewards.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Achievements</h1>
+              <p class="page-desc">Unlock career badges, titles, and coin rewards.</p>
             </div>
             <span class="badge-chip" id="achievementsCountBadge">0 / 18 Unlocked</span>
           </div>
@@ -609,47 +598,53 @@
         <!-- ================= VIEW: GARAGE ================= -->
         <section id="tab-garage" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Garage</h1>
-                <p class="page-desc">Customize your starfighter chassis and engine exhaust trails.</p>
+            <div>
+              <h1 class="page-title">Garage &amp; Customization</h1>
+              <p class="page-desc">Spend your earned Neon Coins on ship skins, cosmic backgrounds, and engine exhaust trails.</p>
+            </div>
+            <div class="coins-badge garage-wallet-pill" title="Your Neon Coins">
+              <span class="coin-glyph">🪙</span>
+              <span class="coin-val" id="garageWalletCoins">0</span>
+            </div>
+          </div>
+
+          <!-- Live Loadout Preview Stage -->
+          <div class="surface-card garage-loadout-stage" id="garageActiveLoadoutStage">
+            <div class="loadout-preview-display">
+              <div class="loadout-ship-svg-wrap" id="garageActiveShipSvg"></div>
+              <div class="loadout-stage-info">
+                <span class="card-eyebrow">EQUIPPED LOADOUT</span>
+                <div class="loadout-chip-row">
+                  <span class="loadout-chip">🚀 <strong id="garageActiveShipLabel">Default Ship</strong></span>
+                  <span class="loadout-chip">🌌 <strong id="garageActiveBgLabel">Deep Space</strong></span>
+                  <span class="loadout-chip">✨ <strong id="garageActiveTrailLabel">Plasma</strong></span>
+                </div>
               </div>
             </div>
           </div>
 
-          <h2 class="section-title mt-4">Ship Chassis</h2>
-          <div class="cosmetics-grid" id="garageShipSelector">
-            <!-- Dynamically populated -->
+          <!-- Cosmetic Category Tabs -->
+          <div class="filter-segmented-control mb-4">
+            <button class="segment-btn active" id="garageTabShips" onclick="window.platform.setGarageCategory('ships')">Ships (9)</button>
+            <button class="segment-btn" id="garageTabBackgrounds" onclick="window.platform.setGarageCategory('backgrounds')">Backgrounds (7)</button>
+            <button class="segment-btn" id="garageTabTrails" onclick="window.platform.setGarageCategory('trails')">Trails (6)</button>
           </div>
 
-          <h2 class="section-title mt-6">Engine Trails</h2>
-          <div class="cosmetics-grid" id="garageTrailSelector">
-            <!-- Dynamically populated -->
+          <!-- Dynamic Cosmetic Items Grid -->
+          <div class="garage-items-grid" id="garageItemGrid">
+            <!-- Dynamically populated in platform.js -->
           </div>
+
+          <div id="garageShipSelector" class="hidden"></div>
+          <div id="garageTrailSelector" class="hidden"></div>
         </section>
 
         <!-- ================= VIEW: FRIENDS ================= -->
         <section id="tab-friends" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Friends</h1>
-                <p class="page-desc">Connect with other players, compare scores, and send duels.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Friends</h1>
+              <p class="page-desc">Connect with other players, compare scores, and send duels.</p>
             </div>
           </div>
 
@@ -669,18 +664,9 @@
         <!-- ================= VIEW: CHALLENGES ================= -->
         <section id="tab-challenges" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Challenges</h1>
-                <p class="page-desc">Beat friend scores to claim coin rewards and bragging rights.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Challenges</h1>
+              <p class="page-desc">Beat friend scores to claim coin rewards and bragging rights.</p>
             </div>
           </div>
 
@@ -692,18 +678,9 @@
         <!-- ================= VIEW: SETTINGS ================= -->
         <section id="tab-settings" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">Settings</h1>
-                <p class="page-desc">Audio preferences, accessibility, graphics, and account management.</p>
-              </div>
+            <div>
+              <h1 class="page-title">Settings</h1>
+              <p class="page-desc">Audio preferences, accessibility, graphics, and account management.</p>
             </div>
           </div>
 
@@ -819,18 +796,9 @@
         <!-- ================= VIEW: HOW TO PLAY ================= -->
         <section id="tab-howtoplay" class="platform-view-tab hidden">
           <div class="view-header-row">
-            <div class="view-header-title-wrap">
-              <button class="btn btn-secondary btn-sm mobile-view-home-btn" onclick="window.platform.switchTab('play')" title="Back to Home" aria-label="Home">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-              </button>
-              <div>
-                <h1 class="page-title">How to Play</h1>
-                <p class="page-desc">Maneuver your ship, evade hazards, collect crystals, and build combos.</p>
-              </div>
+            <div>
+              <h1 class="page-title">How to Play</h1>
+              <p class="page-desc">Maneuver your ship, evade hazards, collect crystals, and build combos.</p>
             </div>
             <button class="btn btn-primary btn-sm" onclick="window.platform.replayTutorial()">Interactive Tutorial</button>
           </div>
@@ -983,6 +951,15 @@
   <div id="gameplayModal" class="gameplay-modal-wrapper hidden">
     <div class="game-wrapper" id="gameWrapper">
       
+      <!-- Device Orientation Warning (Portrait Preferred) -->
+      <div id="landscapeOrientationWarning" class="landscape-warning-overlay hidden" aria-live="polite">
+        <div class="landscape-warning-box">
+          <div class="rotate-glyph">🔄</div>
+          <h3 class="rotate-title">Please Rotate Device</h3>
+          <p class="rotate-desc">Neon Escape is designed for portrait flight maneuvering.</p>
+        </div>
+      </div>
+
       <!-- Top Gameplay Bar (Minimalist) -->
       <div class="gameplay-top-bar" id="gameplayTopBar">
         <div class="gameplay-top-left">

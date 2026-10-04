@@ -3370,4 +3370,427 @@ html, body {
   cursor: default;
 }
 
+/* ==========================================================================
+   COIN REWARD FEEDBACK & ANIMATIONS
+   ========================================================================== */
+@keyframes coinPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.18); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
+  100% { transform: scale(1); }
+}
+
+.coin-pulse {
+  animation: coinPulse 0.35s ease-out forwards;
+}
+
+/* ==========================================================================
+   PAGE HEADER & HEADING ALIGNMENT (NO MISALIGNMENT)
+   ========================================================================== */
+.view-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.view-header-row > div:first-child {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.page-title {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.page-desc {
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   GARAGE & CUSTOMIZATION SECTION (ARCADE FEEL, NO E-COMMERCE)
+   ========================================================================== */
+.garage-wallet-pill {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid #FDE68A;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.garage-loadout-stage {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid #334155;
+  border-radius: var(--radius-card);
+  padding: 20px;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+
+.loadout-preview-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.loadout-ship-svg-wrap {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.loadout-stage-info {
+  flex: 1 1 200px;
+}
+
+.loadout-stage-info .card-eyebrow {
+  color: #94A3B8;
+}
+
+.loadout-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.loadout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #f1f5f9;
+}
+
+.loadout-chip strong {
+  color: #ffffff;
+}
+
+/* Garage Item Grid */
+.garage-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 1200px) {
+  .garage-items-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .garage-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .garage-items-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cosmetic Card */
+.cosmetic-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cosmetic-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cosmetic-card.equipped {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.03);
+}
+
+.cosmetic-preview-box {
+  width: 100%;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-neutral);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cosmetic-thumb-bg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cosmetic-trail-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trail-particle-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.cosmetic-card-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.cosmetic-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cosmetic-rarity-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.rarity-starter { background: #f1f5f9; color: #475569; }
+.rarity-common { background: #dbeafe; color: #1e40af; }
+.rarity-rare { background: #ede9fe; color: #6d28d9; }
+.rarity-epic { background: #fce7f3; color: #be185d; }
+.rarity-legendary { background: #fef3c7; color: #b45309; }
+
+.cosmetic-price-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #b45309;
+  margin: 6px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cosmetic-btn {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   PROFILE SECTION REDESIGN (FOCUSED & CLEAN)
+   ========================================================================== */
+.profile-joined-text {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-left: 12px;
+}
+
+.profile-key-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .profile-key-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.highlight-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 14px;
+  text-align: center;
+}
+
+.profile-loadout-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
+
+.profile-loadout-items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .profile-loadout-items-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loadout-item-card {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loadout-item-type {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+}
+
+.loadout-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   LANDSCAPE ORIENTATION WARNING
+   ========================================================================== */
+.landscape-warning-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 14, 26, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: #ffffff;
+}
+
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 932px) {
+  .landscape-warning-overlay {
+    display: flex !important;
+  }
+}
+
+.landscape-warning-box {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 320px;
+}
+
+.rotate-glyph {
+  font-size: 36px;
+  margin-bottom: 12px;
+  animation: spinSlow 3s linear infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rotate-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.rotate-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ==========================================================================
+   FLUID RESPONSIVE CONTAINER & TOUCH TARGET AUDIT
+   ========================================================================== */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.platform-content-area {
+  width: calc(100% - 32px);
+  max-width: 1200px;
+  padding: clamp(16px, 3vw, 28px) 0;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .platform-main-container {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Touch Friendly Elements (min 44px) */
+button, .nav-tab-btn, .mobile-nav-btn, .segment-btn {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+/* Gameplay Area Touch */
+#canvasContainer, #gameCanvas {
+  touch-action: none !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
 
