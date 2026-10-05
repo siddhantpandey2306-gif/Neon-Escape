@@ -102,6 +102,9 @@ class MonetizationManager {
       u.coins -= costCoins;
       window.platform.saveUserSession();
       window.platform.renderHeaderUserBar();
+      if (typeof window.platform.updateAllCoinDisplays === 'function') {
+        window.platform.updateAllCoinDisplays();
+      }
       if (typeof onSuccess === 'function') onSuccess();
     } else {
       if (typeof onFailure === 'function') onFailure('Insufficient Neon Coins');

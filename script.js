@@ -25,7 +25,12 @@
 class QualityManager {
   constructor() {
     this.isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
-    this.level = this.isMobile ? 'MEDIUM' : 'HIGH';
+    let savedLevel = null;
+    try {
+      const s = JSON.parse(localStorage.getItem('neon_escape_settings') || '{}');
+      if (s.graphicsQuality) savedLevel = s.graphicsQuality;
+    } catch (e) {}
+    this.level = savedLevel || (this.isMobile ? 'MEDIUM' : 'HIGH');
     this.fps = 60;
     this.frameCount = 0;
     this.lastFpsUpdate = performance.now();
@@ -41,6 +46,14 @@ class QualityManager {
 
   get config() {
     return this.configs[this.level];
+  }
+
+  get currentQuality() {
+    return this.level;
+  }
+
+  set currentQuality(val) {
+    if (this.configs[val]) this.level = val;
   }
 
   update(now) {
@@ -580,6 +593,11 @@ class InputHandler {
       if (e.key === 'Escape' || e.code === 'KeyP') {
         if (this.onPauseRequested) this.onPauseRequested();
       }
+      if (e.code === 'KeyM') {
+        if (window.game && typeof window.game.toggleSound === 'function') {
+          window.game.toggleSound();
+        }
+      }
       if (e.code === 'KeyF') {
         if (window.game && window.game.qm) window.game.qm.toggleDebug();
       }
@@ -589,6 +607,8 @@ class InputHandler {
       if (e.key === 'ArrowLeft' || e.code === 'KeyA') this.left = false;
       if (e.key === 'ArrowRight' || e.code === 'KeyD') this.right = false;
     });
+
+    window.addEventListener('blur', () => this.reset());
 
     const getCanvasX = (clientX) => {
       const rect = this.canvas.getBoundingClientRect();
@@ -1597,10 +1617,12 @@ class NeonEscapeGame {
       barrier: new ObjectPool(() => new BarrierObstacle(), 4, 10),
       drone: new ObjectPool(() => new DroneObstacle(), 4, 10),
       plasma: new ObjectPool(() => new PlasmaBallObstacle(), 4, 10),
+      plasmaball: null,
       crystal: new ObjectPool(() => new EnergyCrystal(), 12, 30),
       rarecrystal: new ObjectPool(() => new RareCrystal(), 4, 10),
       powerup: new ObjectPool(() => new PowerUpItem(), 4, 10)
     };
+    this.pools.plasmaball = this.pools.plasma;
 
     // Subsystems
     this.audio = new AudioController();
@@ -1631,8 +1653,12 @@ class NeonEscapeGame {
       shieldBadge: document.getElementById('shieldBadge'),
       shieldTimeText: document.getElementById('shieldTimeText'),
       slowmoBadge: document.getElementById('slowmoBadge'),
+      slowmoTimeText: document.getElementById('slowmoTimeText'),
       doubleBadge: document.getElementById('doubleBadge'),
+      doubleTimeText: document.getElementById('doubleTimeText'),
       magnetBadge: document.getElementById('magnetBadge'),
+      magnetTimeText: document.getElementById('magnetTimeText'),
+      phaseAnnouncement: document.getElementById('phaseAnnouncement'),
       finalScoreVal: document.getElementById('finalScoreVal'),
       finalHighScoreVal: document.getElementById('finalHighScoreVal'),
       finalTimeVal: document.getElementById('finalTimeVal'),
@@ -1669,6 +1695,9 @@ class NeonEscapeGame {
     try {
       const stored = localStorage.getItem('neon_sound_preference');
       this.audio.isMuted = stored === 'false';
+      if (window.platform && typeof window.platform.updateSoundIcons === 'function') {
+        window.platform.updateSoundIcons(this.audio.isMuted);
+      }
     } catch (e) {}
   }
 
@@ -1676,6 +1705,9 @@ class NeonEscapeGame {
     this.audio.init();
     this.audio.setMuted(!this.audio.isMuted);
     try { localStorage.setItem('neon_sound_preference', String(!this.audio.isMuted)); } catch (e) {}
+    if (window.platform && typeof window.platform.updateSoundIcons === 'function') {
+      window.platform.updateSoundIcons(this.audio.isMuted);
+    }
   }
 
   bindEvents() {
@@ -1878,7 +1910,7 @@ class NeonEscapeGame {
     } else if (this.highScore > 0 && this.score > this.highScore && this.score - finalPoints <= this.highScore) {
       this.audio.playMilestone();
       this.particles.addText('★ NEW PERSONAL BEST! ★', this.player.x, this.player.y - 50, '#10B981', 20);
-      if (navigator.vibrate) navigator.vibrate([20, 20, 20]);
+      this.vibrate([20, 20, 20]);
     }
 
     if (this.score > this.highScore) {
@@ -1924,16 +1956,28 @@ class NeonEscapeGame {
       }
     }
     if (this.dom.slowmoBadge) {
-      if (this.slowMoTimer > 0) this.dom.slowmoBadge.classList.remove('hidden');
-      else this.dom.slowmoBadge.classList.add('hidden');
+      if (this.slowMoTimer > 0) {
+        this.dom.slowmoBadge.classList.remove('hidden');
+        if (this.dom.slowmoTimeText) this.dom.slowmoTimeText.textContent = `${Math.ceil(this.slowMoTimer)}s`;
+      } else {
+        this.dom.slowmoBadge.classList.add('hidden');
+      }
     }
     if (this.dom.doubleBadge) {
-      if (this.doubleScoreTimer > 0) this.dom.doubleBadge.classList.remove('hidden');
-      else this.dom.doubleBadge.classList.add('hidden');
+      if (this.doubleScoreTimer > 0) {
+        this.dom.doubleBadge.classList.remove('hidden');
+        if (this.dom.doubleTimeText) this.dom.doubleTimeText.textContent = `${Math.ceil(this.doubleScoreTimer)}s`;
+      } else {
+        this.dom.doubleBadge.classList.add('hidden');
+      }
     }
     if (this.dom.magnetBadge) {
-      if (this.magnetTimer > 0) this.dom.magnetBadge.classList.remove('hidden');
-      else this.dom.magnetBadge.classList.add('hidden');
+      if (this.magnetTimer > 0) {
+        this.dom.magnetBadge.classList.remove('hidden');
+        if (this.dom.magnetTimeText) this.dom.magnetTimeText.textContent = `${Math.ceil(this.magnetTimer)}s`;
+      } else {
+        this.dom.magnetBadge.classList.add('hidden');
+      }
     }
 
     // Combo badge
@@ -1960,7 +2004,26 @@ class NeonEscapeGame {
     else if (this.collectionStreak === 50) this.particles.addText('Elite Run! (50 Streak)', this.player.x, this.player.y - 45, '#EC4899', 20);
   }
 
+  vibrate(pattern) {
+    try {
+      if (window.platform && typeof window.platform.getSettings === 'function') {
+        const s = window.platform.getSettings();
+        if (s.vibration === false) return;
+      }
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch (e) {}
+  }
+
   triggerScreenShake(intensity = 8) {
+    try {
+      if (window.platform && typeof window.platform.getSettings === 'function') {
+        const s = window.platform.getSettings();
+        if (s.reducedMotion) {
+          this.screenShake = 0;
+          return;
+        }
+      }
+    } catch (e) {}
     this.screenShake = intensity;
   }
 
@@ -1970,6 +2033,17 @@ class NeonEscapeGame {
     const distSq = dx * dx + dy * dy;
     const radSum = c1.radius + c2.radius;
     return distSq < (radSum * radSum);
+  }
+
+  checkBarrierCollision(player, barrier) {
+    const py = player.y + (player.bobOffsetY || 0);
+    const halfW = barrier.width / 2;
+    const halfH = barrier.height / 2;
+    const closestX = Math.max(barrier.x - halfW, Math.min(player.x, barrier.x + halfW));
+    const closestY = Math.max(barrier.y - halfH, Math.min(py, barrier.y + halfH));
+    const dx = player.x - closestX;
+    const dy = py - closestY;
+    return (dx * dx + dy * dy) < (player.radius * player.radius);
   }
 
   handlePlayerDamage() {
@@ -1994,7 +2068,7 @@ class NeonEscapeGame {
       this.particles.addText('SHIELD BROKEN!', this.player.x, this.player.y - 40, '#38BDF8', 16);
       this.triggerScreenShake(7);
       if (this.dom.shieldBadge) this.dom.shieldBadge.classList.add('hidden');
-      if (navigator.vibrate) navigator.vibrate(30);
+      this.vibrate(30);
       return;
     }
 
@@ -2004,7 +2078,7 @@ class NeonEscapeGame {
     this.audio.playHit();
     this.triggerScreenShake(14);
     this.particles.spawnExplosion(this.player.x, this.player.y, 30, '#DC2626');
-    if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+    this.vibrate([40, 30, 40]);
 
     this.gameOver();
   }
@@ -2194,6 +2268,17 @@ class NeonEscapeGame {
       const names = ['', 'TRAINING', 'ACCELERATION', 'CHAOS', 'OVERDRIVE', 'NIGHTMARE'];
       this.particles.addText(`PHASE ${this.currentPhase}: ${names[this.currentPhase]}`, this.canvas.width / 2, 90, '#2563EB', 20);
       this.audio.playMilestone();
+      if (this.dom.phaseAnnouncement) {
+        this.dom.phaseAnnouncement.textContent = `Phase ${this.currentPhase} • ${names[this.currentPhase]}`;
+        this.dom.phaseAnnouncement.classList.remove('hidden');
+        clearTimeout(this.phaseBannerTimer);
+        this.phaseBannerTimer = setTimeout(() => {
+          if (this.dom.phaseAnnouncement) this.dom.phaseAnnouncement.classList.add('hidden');
+        }, 3000);
+      }
+      if (this.currentPhase === 5 && window.platform && typeof window.platform.checkAchievement === 'function') {
+        window.platform.checkAchievement('phase_nightmare', true);
+      }
     }
 
     // Update Subsystems
@@ -2209,15 +2294,19 @@ class NeonEscapeGame {
 
       const isHazard = obj.type === 'meteor' || obj.type === 'barrier' || obj.type === 'drone' || obj.type === 'plasmaball';
 
-      // Collision Check
-      if (this.checkCircleCollision(this.player, obj)) {
+      // Collision Check (Accurate rectangular hitbox for barrier, circle for others)
+      const isColliding = obj.type === 'barrier'
+        ? this.checkBarrierCollision(this.player, obj)
+        : this.checkCircleCollision(this.player, obj);
+
+      if (isColliding) {
         if (obj.type === 'crystal') {
           this.crystalsCollected++;
           this.incrementCombo();
           this.audio.playCollect(this.combo);
           this.particles.spawnCrystalSparkles(obj.x, obj.y, false);
           this.addScore(10 * this.combo, true, obj.x, obj.y);
-          if (navigator.vibrate) navigator.vibrate(10);
+          this.vibrate(10);
           obj.isDead = true;
         } else if (obj.type === 'rarecrystal') {
           this.crystalsCollected++;
@@ -2225,7 +2314,7 @@ class NeonEscapeGame {
           this.audio.playRareCollect();
           this.particles.spawnCrystalSparkles(obj.x, obj.y, true);
           this.addScore(50 * this.combo, true, obj.x, obj.y);
-          if (navigator.vibrate) navigator.vibrate(15);
+          this.vibrate(15);
           obj.isDead = true;
         } else if (obj.type === 'powerup') {
           this.powerupsCollected++;
@@ -2253,7 +2342,7 @@ class NeonEscapeGame {
             this.magnetTimer = 8.0;
             this.particles.addText('MAGNET ACTIVE 8s!', obj.x, obj.y - 20, '#10B981', 18);
           }
-          if (navigator.vibrate) navigator.vibrate(25);
+          this.vibrate(25);
           obj.isDead = true;
         } else {
           // Obstacle collision
@@ -2262,10 +2351,25 @@ class NeonEscapeGame {
         }
       } else if (isHazard && !obj.nearMissChecked && !obj.isDead) {
         // Skill-Based Near-Miss Evasion Detection
-        const yDiff = Math.abs(obj.y - (this.player.y + this.player.bobOffsetY));
-        if (yDiff < 24) {
-          const dist = Math.hypot(obj.x - this.player.x, obj.y - (this.player.y + this.player.bobOffsetY));
-          const minSafeDist = this.player.radius + obj.radius;
+        const playerCenterY = this.player.y + (this.player.bobOffsetY || 0);
+        const yDiff = Math.abs(obj.y - playerCenterY);
+        const isBarrier = obj.type === 'barrier';
+        const yThreshold = isBarrier ? 28 : 24;
+
+        if (yDiff < yThreshold) {
+          let dist, minSafeDist;
+          if (isBarrier) {
+            const halfW = obj.width / 2;
+            const halfH = obj.height / 2;
+            const closestX = Math.max(obj.x - halfW, Math.min(this.player.x, obj.x + halfW));
+            const closestY = Math.max(obj.y - halfH, Math.min(playerCenterY, obj.y + halfH));
+            dist = Math.hypot(this.player.x - closestX, playerCenterY - closestY);
+            minSafeDist = this.player.radius;
+          } else {
+            dist = Math.hypot(obj.x - this.player.x, obj.y - playerCenterY);
+            minSafeDist = this.player.radius + obj.radius;
+          }
+
           if (dist >= minSafeDist && dist <= minSafeDist + 38) {
             obj.nearMissChecked = true;
             this.nearMissesCount++;
@@ -2279,7 +2383,7 @@ class NeonEscapeGame {
             this.particles.spawnNearMissSparks(this.player.x, this.player.y + this.player.bobOffsetY);
             const label = multiplier > 1 ? `${multiplier}x NEAR MISS +${bonus}` : `NEAR MISS +${bonus}`;
             this.particles.addText(label, this.player.x, this.player.y - 32, '#2563EB', 16);
-            if (navigator.vibrate) navigator.vibrate(12);
+            this.vibrate(12);
           }
         }
       }

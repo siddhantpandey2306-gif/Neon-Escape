@@ -228,6 +228,9 @@ class PlatformController {
         challengesLost: 0
       };
     }
+    if (this.currentUser.stats.lastRunSurvivalTime === undefined) {
+      this.currentUser.stats.lastRunSurvivalTime = 0;
+    }
     if (!this.currentUser.unlockedShips) this.currentUser.unlockedShips = ['phantom'];
     if (!this.currentUser.unlockedShips.includes('phantom')) this.currentUser.unlockedShips.unshift('phantom');
     if (!this.currentUser.unlockedBackgrounds) this.currentUser.unlockedBackgrounds = ['deep_space'];
@@ -434,6 +437,20 @@ class PlatformController {
   startMissionsCountdown() {
     const updateCountdown = () => {
       const now = new Date();
+      if (this.activeMissionCategory === 'weekly') {
+        const day = now.getUTCDay(); // 0 = Sunday
+        const daysUntilSunday = (7 - day) % 7;
+        const nextSundayMidnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + (daysUntilSunday === 0 ? 7 : daysUntilSunday), 0, 0, 0));
+        const diff = Math.max(0, nextSundayMidnight.getTime() - Date.now());
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const formatted = `Weekly Reset in ${days}d ${hours}h ${minutes}m`;
+        const el = document.getElementById('missionsResetCountdown');
+        if (el) el.textContent = formatted;
+        return;
+      }
+
       const nextMidnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0));
       const diff = Math.max(0, nextMidnight.getTime() - Date.now());
       const hours = Math.floor(diff / 3600000);
@@ -450,6 +467,7 @@ class PlatformController {
       }
     };
 
+    this.updateMissionsCountdown = updateCountdown;
     updateCountdown();
     setInterval(updateCountdown, 1000);
   }
@@ -470,6 +488,9 @@ class PlatformController {
       }
     }
 
+    if (this.updateMissionsCountdown) {
+      this.updateMissionsCountdown();
+    }
     this.renderMissionsTab();
   }
 
@@ -680,6 +701,7 @@ class PlatformController {
     this.checkAchievement('score_25k', runStats.score >= 25000);
     this.checkAchievement('score_100k', runStats.score >= 100000);
     this.checkAchievement('score_500k', runStats.score >= 500000);
+    this.checkAchievement('phase_nightmare', (runStats.survivalTime >= 360) || (window.game && window.game.currentPhase >= 5));
   }
 
   // --- ANTI-CHEAT & SCORE SUBMISSION ---
@@ -723,6 +745,7 @@ class PlatformController {
     // Update career stats
     stats.gamesPlayed++;
     stats.lastRunScore = verifiedScore;
+    stats.lastRunSurvivalTime = validSurvival;
     stats.totalScore += verifiedScore;
     stats.totalSurvivalTime += validSurvival;
     stats.longestSurvival = Math.max(stats.longestSurvival, validSurvival);
@@ -818,7 +841,8 @@ class PlatformController {
       earnedCoins,
       globalRank: rankInfo.rank,
       isNewGlobalRank: rankInfo.isTop10,
-      challengeOutcome
+      challengeOutcome,
+      sessionToken: this.gameSessionStart ? this.gameSessionStart.token : null
     };
 
     if (this.gameSessionStart) {
@@ -839,6 +863,10 @@ class PlatformController {
     const now = new Date();
     const dateStr = `${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`;
 
+    const isPrevHigher = existingIndex >= 0 && board[existingIndex].score > score;
+    const finalScore = isPrevHigher ? board[existingIndex].score : score;
+    const finalSurvival = isPrevHigher ? board[existingIndex].survivalTime : Math.floor(survivalTime);
+
     const playerEntry = {
       id: this.currentUser.uid,
       playerId: this.currentUser.playerId,
@@ -848,8 +876,8 @@ class PlatformController {
       flag: this.currentUser.flag || '🌍',
       avatar: this.currentUser.avatar || 'apex',
       level: this.currentUser.level || 1,
-      score: Math.max(score, existingIndex >= 0 ? board[existingIndex].score : 0),
-      survivalTime: Math.floor(survivalTime),
+      score: finalScore,
+      survivalTime: finalSurvival,
       date: dateStr,
       updatedAt: now.toISOString()
     };
@@ -981,6 +1009,16 @@ class PlatformController {
       userCardBtn.addEventListener('click', () => this.switchTab('profile'));
     }
 
+    // Sound Button in Header
+    const soundBtn = document.getElementById('soundToggleBtn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => {
+        if (window.game && typeof window.game.toggleSound === 'function') {
+          window.game.toggleSound();
+        }
+      });
+    }
+
     // Modal close buttons
     document.querySelectorAll('.modal-close-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -988,6 +1026,28 @@ class PlatformController {
         if (modal) modal.classList.add('hidden');
       });
     });
+  }
+
+  updateSoundIcons(isMuted) {
+    const soundOn = document.querySelector('#soundToggleBtn .icon-sound-on');
+    const soundOff = document.querySelector('#soundToggleBtn .icon-sound-off');
+    if (soundOn && soundOff) {
+      if (isMuted) {
+        soundOn.classList.add('hidden');
+        soundOff.classList.remove('hidden');
+      } else {
+        soundOn.classList.remove('hidden');
+        soundOff.classList.add('hidden');
+      }
+    }
+    const inGameBtn = document.getElementById('inGameSoundToggleBtn');
+    if (inGameBtn) {
+      inGameBtn.style.opacity = isMuted ? '0.4' : '1.0';
+    }
+    const settingsBtn = document.getElementById('settingsSoundToggleBtn');
+    if (settingsBtn) {
+      settingsBtn.textContent = isMuted ? 'Sound: MUTED (M to Unmute)' : 'Sound: ON (M to Mute)';
+    }
   }
 
   switchTab(tabName) {
@@ -1257,6 +1317,23 @@ class PlatformController {
   }
 
   // --- TAB: RANKINGS ---
+  setRankingFilter(category) {
+    this.currentRankingFilter = category;
+    const btns = document.querySelectorAll('#tab-rankings .filter-segmented-control .segment-btn');
+    btns.forEach(btn => {
+      const text = btn.textContent.trim().toLowerCase();
+      if ((category === 'global' && text.includes('global')) ||
+          (category === 'country' && text.includes('country')) ||
+          (category === 'friends' && text.includes('friends')) ||
+          (category === 'season' && text.includes('season'))) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    this.renderRankingsTab();
+  }
+
   renderRankingsTab() {
     this.syncCloudLeaderboard();
     const list = this.getLeaderboardData(this.currentRankingFilter, this.currentRankingPeriod);
@@ -1560,13 +1637,18 @@ class PlatformController {
   // --- TAB: GARAGE & COSMETICS CUSTOMIZATION ---
   setGarageCategory(category) {
     this.activeGarageTab = category;
-    ['garageTabShips', 'garageTabBackgrounds', 'garageTabTrails'].forEach(btnId => {
-      const btn = document.getElementById(btnId);
+    const catMap = {
+      'ships': 'garageTabShips',
+      'backgrounds': 'garageTabBackgrounds',
+      'trails': 'garageTabTrails'
+    };
+    for (let c in catMap) {
+      const btn = document.getElementById(catMap[c]);
       if (btn) {
-        if (btn.dataset.category === category) btn.classList.add('active');
+        if (c === category || btn.dataset.category === category) btn.classList.add('active');
         else btn.classList.remove('active');
       }
-    });
+    }
     this.renderGarageTab();
   }
 
@@ -1961,7 +2043,7 @@ class PlatformController {
   // --- VIRAL SOCIAL SHARING (ITEM 9) ---
   shareRunResult(score, survivalSeconds) {
     const s = score || (this.currentUser.stats.lastRunScore || this.currentUser.stats.bestScore || 0);
-    const secs = Math.floor(survivalSeconds || this.currentUser.stats.longestSurvival || 0);
+    const secs = Math.floor(survivalSeconds || (window.game && window.game.survivalSeconds) || this.currentUser.stats.lastRunSurvivalTime || this.currentUser.stats.longestSurvival || 0);
     const mins = Math.floor(secs / 60);
     const remSecs = secs % 60;
     const timeStr = `${mins}m ${remSecs}s`;
@@ -2086,6 +2168,7 @@ class PlatformController {
     s.graphicsQuality = level;
     this.saveSettings(s);
     if (window.game && window.game.qm) {
+      window.game.qm.level = level;
       window.game.qm.currentQuality = level;
     }
     this.triggerPlatformNotification('Quality Mode', `Graphics set to ${level}.`, '🖥️');
@@ -2207,7 +2290,7 @@ class PlatformController {
     const email = (document.getElementById('signupEmailInput') || document.getElementById('signupEmail'))?.value.trim();
     const password = (document.getElementById('signupPasswordInput') || document.getElementById('signupPassword'))?.value;
     const confirmPassword = (document.getElementById('signupConfirmPasswordInput') || document.getElementById('signupConfirmPassword'))?.value;
-    const country = (document.getElementById('signupCountryInput') || document.getElementById('signupCountry'))?.value || '🌍 GL';
+    const country = (document.getElementById('signupCountrySelect') || document.getElementById('signupCountryInput') || document.getElementById('signupCountry'))?.value || '🌍 GL';
 
     if (!username || username.length < 3) {
       this.showAuthError('Username must be at least 3 characters');
@@ -2388,6 +2471,9 @@ class PlatformController {
   }
 
   exitGameToPlatform() {
+    if (window.game && typeof window.game.exitToHome === 'function' && window.game.state !== 'HOME') {
+      window.game.exitToHome();
+    }
     const modal = document.getElementById('gameplayModal');
     if (modal) modal.classList.add('hidden');
     this.switchTab('play');
